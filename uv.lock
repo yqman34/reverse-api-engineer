@@ -1020,7 +1020,7 @@ wheels = [
 ]
 
 [[package]]
-name = "reverse-api"
+name = "reverse-api-engineer"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
