@@ -8,6 +8,8 @@
 
 **Reverse API** is an AI-powered tool that captures browser traffic and automatically generates production-ready Python API clients. No more manual reverse engineering—just browse, capture, and get clean API code.
 
+![Reverse API Engineer Demo](assets/reverse-api-engineer.gif)
+
 ## ✨ Features
 
 - 🌐 **Browser Automation**: Built on Playwright with stealth mode for realistic browsing
