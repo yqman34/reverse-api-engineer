@@ -1,0 +1,87 @@
+<svg width="1200" height="300" viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0a0a0a;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1a1a1a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0a0a0a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="300" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle grid pattern -->
+  <g opacity="0.03">
+    <line x1="0" y1="50" x2="1200" y2="50" stroke="#fff" stroke-width="1"/>
+    <line x1="0" y1="100" x2="1200" y2="100" stroke="#fff" stroke-width="1"/>
+    <line x1="0" y1="150" x2="1200" y2="150" stroke="#fff" stroke-width="1"/>
+    <line x1="0" y1="200" x2="1200" y2="200" stroke="#fff" stroke-width="1"/>
+    <line x1="0" y1="250" x2="1200" y2="250" stroke="#fff" stroke-width="1"/>
+  </g>
+  
+  <!-- Logo on the left -->
+  <g transform="translate(150, 150) scale(0.7)">
+    <!-- Left brace -->
+    <path d="M -30 -90 
+             Q -50 -90 -60 -80
+             Q -70 -70 -70 -50
+             L -70 -15
+             Q -70 -5 -80 -5
+             L -90 -5
+             L -90 5
+             L -80 5
+             Q -70 5 -70 15
+             L -70 50
+             Q -70 70 -60 80
+             Q -50 90 -30 90"
+          fill="none" 
+          stroke="#ffffff" 
+          stroke-width="10" 
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+    
+    <!-- Right brace -->
+    <path d="M 30 -90 
+             Q 50 -90 60 -80
+             Q 70 -70 70 -50
+             L 70 -15
+             Q 70 -5 80 -5
+             L 90 -5
+             L 90 5
+             L 80 5
+             Q 70 5 70 15
+             L 70 50
+             Q 70 70 60 80
+             Q 50 90 30 90"
+          fill="none" 
+          stroke="#ffffff" 
+          stroke-width="10" 
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+    
+    <!-- Center dots -->
+    <circle cx="-15" cy="0" r="4" fill="#ef4444"/>
+    <circle cx="0" cy="0" r="4" fill="#ef4444"/>
+    <circle cx="15" cy="0" r="4" fill="#ef4444"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="280" y="165" font-family="'SF Mono', 'Monaco', 'Inconsolata', monospace" font-size="72" font-weight="700" fill="#ffffff" letter-spacing="-2">
+    reverse-api
+  </text>
+  
+  <!-- Tagline -->
+  <text x="280" y="200" font-family="'SF Mono', 'Monaco', 'Inconsolata', monospace" font-size="20" fill="#ef4444" letter-spacing="1">
+    REVERSE ENGINEER ANY API
+  </text>
+  
+  <!-- Decorative code elements -->
+  <g opacity="0.2">
+    <text x="950" y="80" font-family="monospace" font-size="14" fill="#ef4444">&lt;/&gt;</text>
+    <text x="1050" y="240" font-family="monospace" font-size="14" fill="#ffffff">{}</text>
+    <text x="50" y="260" font-family="monospace" font-size="12" fill="#ef4444">0x</text>
+  </g>
+  
+  <!-- Subtle scan line effect -->
+  <line x1="0" y1="150" x2="1200" y2="150" stroke="#ef4444" stroke-width="1" opacity="0.1"/>
+</svg>

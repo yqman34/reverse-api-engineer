@@ -1,9 +1,11 @@
-# 🔄 Reverse API Engineer
+<div align="center">
+  <img src="assets/reverse-api-banner.svg" alt="Reverse API Engineer Banner">
+</div>
+
+# Reverse API Engineer
 
 [![PyPI version](https://badge.fury.io/py//reverse-api-engineer.svg)](https://badge.fury.io/py/reverse-api-engineer)
-
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **Reverse API** is an AI-powered tool that captures browser traffic and automatically generates production-ready Python API clients. No more manual reverse engineering—just browse, capture, and get clean API code.
