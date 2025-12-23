@@ -1,5 +1,6 @@
 """Utility functions for run ID generation and path management."""
 
+import asyncio
 import re
 import uuid
 from datetime import datetime
@@ -8,36 +9,50 @@ from pathlib import Path
 
 def generate_folder_name(prompt: str) -> str:
     """Generate a clean folder name from a prompt using Claude Haiku.
-    
-    Uses Anthropic's fastest model to quickly generate a short, descriptive name.
+
+    Uses Claude Agent SDK with claude-haiku-4-5 model to generate a short, descriptive name.
     Falls back to simple slugification if API call fails.
     """
     try:
-        import anthropic
-        
-        client = anthropic.Anthropic()
-        response = client.messages.create(
-            model="claude-4-5-haiku-latest",
-            max_tokens=50,
-            messages=[{
-                "role": "user",
-                "content": f"Generate a short folder name (1-3 words, lowercase, underscores) for this task: {prompt}\n\nRespond with ONLY the folder name, nothing else. Example: apple_jobs_api"
-            }]
-        )
-        
-        name = response.content[0].text.strip().lower()
-        # Clean up the name to be filesystem-safe
-        name = re.sub(r'[^a-z0-9_]', '_', name)
-        name = re.sub(r'_+', '_', name)  # Collapse multiple underscores
-        name = name.strip('_')[:50]  # Limit length
-        
-        if name:
-            return name
+        return asyncio.run(_generate_folder_name_async(prompt))
     except Exception:
         pass
-    
+
     # Fallback: simple slugify
     return _slugify(prompt)
+
+
+async def _generate_folder_name_async(prompt: str) -> str:
+    """Async helper to generate folder name using Claude Agent SDK."""
+    from claude_agent_sdk import ClaudeSDKClient, ClaudeAgentOptions, AssistantMessage, TextBlock
+
+    options = ClaudeAgentOptions(
+        allowed_tools=[],  # No tools needed for simple text generation
+        permission_mode="dontAsk",
+        model="claude-haiku-4-5",
+    )
+
+    folder_name = ""
+
+    async with ClaudeSDKClient(options=options) as client:
+        await client.query(
+            f"Generate a short folder name (1-3 words, lowercase, underscores) for this task: {prompt}\n\n"
+            f"Respond with ONLY the folder name, nothing else. Example: apple_jobs_api"
+        )
+
+        async for message in client.receive_response():
+            if isinstance(message, AssistantMessage):
+                for block in message.content:
+                    if isinstance(block, TextBlock):
+                        folder_name = block.text.strip().lower()
+                        break
+
+    # Clean up the name to be filesystem-safe
+    name = re.sub(r'[^a-z0-9_]', '_', folder_name)
+    name = re.sub(r'_+', '_', name)  # Collapse multiple underscores
+    name = name.strip('_')[:50]  # Limit length
+
+    return name if name else _slugify(prompt)
 
 
 def _slugify(text: str) -> str:
