@@ -1,6 +1,6 @@
-# 🔄 Reverse API
+# 🔄 Reverse API Engineer
 
-[![PyPI version](https://badge.fury.io/py/reverse-api.svg)](https://badge.fury.io/py/reverse-api)
+[![PyPI version](https://badge.fury.io/py/reverse-api-engineer.svg)](https://badge.fury.io/py/reverse-api-engineer)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -20,18 +20,18 @@
 
 ### Using pip
 ```bash
-pip install reverse-api
+pip install reverse-api-engineer
 ```
 
 ### Using uv (recommended)
 ```bash
-uv tool install reverse-api
+uv tool install reverse-api-engineer
 ```
 
 ### From source
 ```bash
-git clone https://github.com/kalil0321/reverse-api.git
-cd reverse-api
+git clone https://github.com/kalil0321/reverse-api-engineer.git
+cd reverse-api-engineer
 uv sync
 ```
 
@@ -47,7 +47,7 @@ playwright install chromium
 
 Launch the interactive CLI:
 ```bash
-reverse-api
+reverse-api-engineer
 ```
 
 The CLI has two modes (cycle with **Shift+Tab**):
@@ -56,7 +56,7 @@ The CLI has two modes (cycle with **Shift+Tab**):
 
 ### Manual Mode (Full Pipeline)
 
-1. Start the CLI: `reverse-api`
+1. Start the CLI: `reverse-api-engineer`
 2. Enter your task description (e.g., "Fetch Apple job listings")
 3. Optionally provide a starting URL
 4. Browse and interact with the website
@@ -73,7 +73,7 @@ Re-run AI generation on a previous capture:
 ```bash
 # In CLI, switch to engineer mode (Shift+Tab) and enter run_id
 # Or use command line:
-reverse-api engineer <run_id>
+reverse-api-engineer engineer <run_id>
 ```
 
 ### CLI Commands
@@ -94,7 +94,7 @@ Choose from Claude 4.5 models:
 
 Change model in `/settings` or via CLI:
 ```bash
-reverse-api manual --model claude-sonnet-4-5
+reverse-api-engineer manual --model claude-sonnet-4-5
 ```
 
 ## 🔧 Configuration
@@ -124,7 +124,7 @@ Settings are stored in `~/.reverse-api/config.json`:
 ### Example: Reverse Engineering a Job Board API
 
 ```bash
-$ reverse-api
+$ reverse-api-engineer
 > fetch all apple jobs from their careers page
 
 # Browser opens, you navigate and interact
@@ -149,14 +149,14 @@ Generated `api_client.py` includes:
 
 ### Setup
 ```bash
-git clone https://github.com/kalil0321/reverse-api.git
-cd reverse-api
+git clone https://github.com/kalil0321/reverse-api-engineer.git
+cd reverse-api-engineer
 uv sync
 ```
 
 ### Run locally
 ```bash
-uv run reverse-api
+uv run reverse-api-engineer
 ```
 
 ### Build

@@ -1,5 +1,5 @@
 [project]
-name = "reverse-api"
+name = "reverse-api-engineer"
 version = "0.1.0"
 description = "A tool to capture browser traffic for API reverse engineering"
 readme = "README.md"
@@ -34,12 +34,12 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/kalil0321/reverse-api"
-Repository = "https://github.com/kalil0321/reverse-api"
-Issues = "https://github.com/kalil0321/reverse-api/issues"
+Homepage = "https://github.com/kalil0321/reverse-api-engineer"
+Repository = "https://github.com/kalil0321/reverse-api-engineer"
+Issues = "https://github.com/kalil0321/reverse-api-engineer/issues"
 
 [project.scripts]
-reverse-api = "reverse_api.cli:main"
+reverse-api-engineer = "reverse_api.cli:main"
 
 [build-system]
 requires = ["hatchling"]
