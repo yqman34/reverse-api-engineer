@@ -161,6 +161,7 @@ cython_debug/
 # Project specific
 har/
 scripts/
+scripts_built/
 !scripts/*/api_client.py
 !scripts/*/example_usage.py
 !scripts/*/README.md
