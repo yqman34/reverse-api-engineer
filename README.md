@@ -35,12 +35,20 @@ CLI tool that captures browser traffic and automatically generates production-re
 
 ### Using pip
 ```bash
+# Basic installation (manual and engineer modes)
 pip install reverse-api-engineer
+
+# With agent mode support (includes browser-use)
+pip install 'reverse-api-engineer[agent]'
 ```
 
 ### Using uv (recommended)
 ```bash
+# Basic installation
 uv tool install reverse-api-engineer
+
+# With agent mode support
+uv tool install 'reverse-api-engineer[agent]'
 ```
 
 ### From source
@@ -96,13 +104,19 @@ reverse-api-engineer engineer <run_id>
 
 Fully automated browser interaction using AI agents:
 
-1. Start the CLI: `reverse-api-engineer`
-2. Switch to agent mode (Shift+Tab until you see `[agent]`)
-3. Enter your task description (e.g., "Click on the first job listing")
-4. Optionally provide a starting URL
-5. The agent automatically navigates and interacts with the website
-6. HAR is captured automatically
-7. Optionally run reverse engineering to generate API client
+1. Install with agent support: `pip install 'reverse-api-engineer[agent]'` or `uv tool install 'reverse-api-engineer[agent]'`
+2. Start the CLI: `reverse-api-engineer`
+3. Switch to agent mode (Shift+Tab until you see `[agent]`)
+4. Enter your task description (e.g., "Click on the first job listing")
+5. Optionally provide a starting URL
+6. The agent automatically navigates and interacts with the website
+7. HAR is captured automatically
+8. Optionally run reverse engineering to generate API client
+
+**Note:** If you need a specific version of browser-use from git, install it separately:
+```bash
+pip install git+https://github.com/browser-use/browser-use.git@<commit-hash>
+```
 
 **Agent Model Configuration:**
 - **Browser-Use LLM** (default): Requires `BROWSER_USE_API_KEY`

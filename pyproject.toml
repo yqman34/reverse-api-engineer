@@ -30,8 +30,12 @@ dependencies = [
     "requests>=2.32.5",
     "anthropic>=0.40.0",
     "brotli>=1.2.0",
-    "browser-use @ git+https://github.com/browser-use/browser-use.git@1a96cf7ef00bfbb6e21978f77e347639c316fff8",
     "aiohttp>=3.12.15",
+]
+
+[project.optional-dependencies]
+agent = [
+    "browser-use",
 ]
 
 [project.urls]

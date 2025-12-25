@@ -611,8 +611,17 @@ class AgentBrowser:
             logger.addHandler(null_handler)
             logger.propagate = False
 
-        from browser_use import Agent, Browser
-        from browser_use import ChatBrowserUse
+        try:
+            from browser_use import Agent, Browser
+            from browser_use import ChatBrowserUse
+        except ImportError:
+            result = {
+                "success": False,
+                "message": None,
+                "error": "browser-use is required for agent mode. Install it with: pip install 'reverse-api-engineer[agent]' or pip install browser-use",
+            }
+            console.print(f" [red]error:[/red] {result['error']}")
+            return result
 
         result = {"success": False, "message": None, "error": None}
         browser = None
