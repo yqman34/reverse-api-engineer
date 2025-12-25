@@ -5,7 +5,7 @@
 # Reverse API Engineer
 
 [![PyPI version](https://badge.fury.io/py//reverse-api-engineer.svg)](https://badge.fury.io/py/reverse-api-engineer)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 CLI tool that captures browser traffic and automatically generates production-ready Python API clients. No more manual reverse engineering—just browse, capture, and get clean API code.
@@ -249,7 +249,7 @@ uv build
 
 ## 🔐 Requirements
 
-- Python 3.10+
+- Python 3.11+
 - Claude Code / OpenCode (for reverse engineering)
 - Playwright browsers installed
 - API key for agent mode (see [Agent Model Configuration](#agent-model-configuration))
