@@ -901,8 +901,7 @@ def run_engineer(run_id, har_path=None, prompt=None, model=None, output_dir=None
             output_dir=output_dir,
             sdk=sdk,
             opencode_provider=config_manager.get("opencode_provider", "anthropic"),
-            opencode_model=model
-            or config_manager.get("opencode_model", "claude-sonnet-4-5"),
+            opencode_model=config_manager.get("opencode_model", "claude-sonnet-4-5"),
         )
     else:
         result = run_reverse_engineering(
