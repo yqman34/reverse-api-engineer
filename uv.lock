@@ -240,7 +240,7 @@ wheels = [
 [[package]]
 name = "browser-use"
 version = "0.11.2"
-source = { git = "https://github.com/browser-use/browser-use.git?rev=49a345fb19e9f12befc5cc1658e0033873892455#49a345fb19e9f12befc5cc1658e0033873892455" }
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
     { name = "anthropic" },
@@ -279,6 +279,10 @@ dependencies = [
     { name = "screeninfo", marker = "platform_system != 'darwin'" },
     { name = "typing-extensions" },
     { name = "uuid7" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/77/42/aacaba1ee2599101ccb14fde3c4732d6e994d9d616b3a7b9c12f8ac5d5b4/browser_use-0.11.2.tar.gz", hash = "sha256:543face2fd5662ee89526d2099a79e01468b51784cdcc85faa36a81fdae4aa68", size = 501474, upload-time = "2025-12-16T22:07:49.749Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3d/04/9d0b9ee9b176fe329d424bf4337982b021b264295aa2fb9a7aef885abd61/browser_use-0.11.2-py3-none-any.whl", hash = "sha256:6ac57c0e2a495749fc83c1faee85001737567f8cd4301ebfcda2a886018a325b", size = 599219, upload-time = "2025-12-16T22:07:48.39Z" },
 ]
 
 [[package]]
@@ -5298,7 +5302,7 @@ wheels = [
 
 [[package]]
 name = "reverse-api-engineer"
-version = "0.2.0"
+version = "0.2.2"
 source = { editable = "." }
 dependencies = [
     { name = "aiohttp" },
@@ -5324,7 +5328,7 @@ requires-dist = [
     { name = "aiohttp", specifier = ">=3.12.15" },
     { name = "anthropic", specifier = ">=0.40.0" },
     { name = "brotli", specifier = ">=1.2.0" },
-    { name = "browser-use", marker = "extra == 'agent'", git = "https://github.com/browser-use/browser-use.git?rev=49a345fb19e9f12befc5cc1658e0033873892455" },
+    { name = "browser-use", marker = "extra == 'agent'" },
     { name = "claude-agent-sdk", specifier = ">=0.1.0" },
     { name = "click", specifier = ">=8.1.0" },
     { name = "playwright", specifier = ">=1.40.0" },

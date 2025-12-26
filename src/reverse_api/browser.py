@@ -241,8 +241,6 @@ class ManualBrowser:
 
     def _start_with_real_chrome(self, start_url: Optional[str] = None) -> Path:
         """Start using the real Chrome browser with user's profile."""
-        # We need to use a COPY of the profile to avoid locking issues
-        # Chrome locks its profile when running, so we can't use it directly
         import shutil
         import tempfile
 
@@ -257,12 +255,12 @@ class ManualBrowser:
         temp_profile_dir = Path(tempfile.mkdtemp(prefix="chrome_profile_"))
 
         console.print(f" [dim]using real chrome (profile copy)[/dim]")
-        console.print(f" [dim]note: close chrome if you have it open[/dim]")
+        console.print(f" [yellow]⚠️  please browse in the FIRST tab only[/yellow]")
+        console.print(f" [yellow]    (new tabs may not be recorded)[/yellow]")
         console.print()
 
         try:
             # Use launch_persistent_context with channel="chrome" to use real Chrome binary
-            # This gives us the real Chrome with a fresh profile that has all extensions/settings
             self._context = self._playwright.chromium.launch_persistent_context(
                 user_data_dir=str(temp_profile_dir),
                 channel="chrome",  # Use real Chrome binary
@@ -278,19 +276,24 @@ class ManualBrowser:
             )
             self._using_persistent = True
 
-            # Get or create page
-            if self._context.pages:
-                page = self._context.pages[0]
-            else:
-                page = self._context.new_page()
+            for existing_page in self._context.pages:
+                try:
+                    existing_page.close()
+                except Exception:
+                    pass
+
+            # For HAR recording & context
+            page = self._context.new_page()
 
             if start_url:
                 page.goto(start_url, wait_until="domcontentloaded")
+            else:
+                page.goto("https://www.google.com", wait_until="domcontentloaded")
 
             # Wait for browser to close
             try:
                 while self._context.pages:
-                    self._context.pages[0].wait_for_timeout(100)  # Faster polling
+                    self._context.pages[0].wait_for_timeout(100)
             except Exception:
                 pass
 
@@ -376,11 +379,14 @@ class ManualBrowser:
 
         if start_url:
             page.goto(start_url, wait_until="domcontentloaded")
+        else:
+            # For HAR recording & context
+            page.goto("about:blank")
 
         # Wait for browser to close
         try:
             while self._context.pages:
-                self._context.pages[0].wait_for_timeout(100)  # Faster polling
+                self._context.pages[0].wait_for_timeout(100) 
         except Exception:
             pass
 
@@ -423,10 +429,26 @@ class ManualBrowser:
                 spinner="dots",
             ) as status:
                 try:
+                    status.update(" [dim]flushing network traffic...[/dim]")
+                    import time
+
+                    time.sleep(1)
+
                     status.update(" [dim]saving har file...[/dim]")
-                    self._context.close()  # This saves the HAR file
-                except Exception:
-                    pass
+                    self._context.close() 
+
+                    if self.har_path.exists():
+                        har_size = self.har_path.stat().st_size
+                        status.update(f" [dim]har saved: {har_size:,} bytes[/dim]")
+                    else:
+                        console.print(
+                            " [yellow]warning: har file was not created[/yellow]"
+                        )
+
+                except Exception as e:
+                    console.print(f" [yellow]warning: error saving har: {e}[/yellow]")
+                    if self.har_path.exists():
+                        console.print(f" [dim]har file exists despite error[/dim]")
                 self._context = None
 
         # Only close browser if not using persistent context
