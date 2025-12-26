@@ -19,6 +19,7 @@ from rich.console import Console
 from rich.status import Status
 
 from .utils import get_har_dir, get_timestamp
+from . import __version__
 
 console = Console()
 
@@ -386,7 +387,7 @@ class ManualBrowser:
         # Wait for browser to close
         try:
             while self._context.pages:
-                self._context.pages[0].wait_for_timeout(100) 
+                self._context.pages[0].wait_for_timeout(100)
         except Exception:
             pass
 
@@ -435,7 +436,7 @@ class ManualBrowser:
                     time.sleep(1)
 
                     status.update(" [dim]saving har file...[/dim]")
-                    self._context.close() 
+                    self._context.close()
 
                     if self.har_path.exists():
                         har_size = self.har_path.stat().st_size
@@ -675,69 +676,43 @@ class AgentBrowser:
     async def _run_with_browser_use(self) -> dict:
         """Run agent with HAR recording via browser-use's built-in HAR capture."""
         import logging
+        import os
 
-        # Custom handler to capture memory logs
-        class MemoryLogHandler(logging.Handler):
-            def __init__(self, console_instance):
-                super().__init__()
-                self.console = console_instance
+        # Set before importing to ensure it takes effect
+        os.environ['BROWSER_USE_LOGGING_LEVEL'] = 'WARNING'
 
-            def emit(self, record):
-                try:
-                    msg = record.getMessage()
-
-                    if "🧠 Memory:" in msg or ("Memory:" in msg and "🧠" not in msg):
-                        if "🧠 Memory:" in msg:
-                            memory_text = msg.split("🧠 Memory:", 1)[-1].strip()
-                        elif "Memory:" in msg:
-                            memory_text = msg.split("Memory:", 1)[-1].strip()
-                        else:
-                            memory_text = msg
-
-                        memory_text = " ".join(memory_text.split())
-
-                        if memory_text:
-                            self.console.print(f"  [dim]{memory_text}[/dim]")
-                except Exception:
-                    pass  # Silently ignore handler errors
-
-        # Suppress all browser-use logs completely
-        # Keep INFO level for memory capture, but prevent propagation to parent handlers
-        null_handler = logging.NullHandler()
-
-        browser_use_logger = logging.getLogger("browser_use")
-        browser_use_logger.setLevel(logging.INFO)
-        browser_use_logger.handlers.clear()  # Remove existing handlers
-        browser_use_logger.propagate = False
-
-        agent_logger = logging.getLogger("Agent")
-        agent_logger.setLevel(logging.INFO)
-        agent_logger.handlers.clear()  # Remove existing handlers
-        agent_logger.propagate = False
-
-        # Suppress these loggers completely
-        for logger_name in ["BrowserSession", "service", "tools"]:
-            logger = logging.getLogger(logger_name)
-            logger.setLevel(logging.CRITICAL)
-            logger.handlers.clear()
-            logger.addHandler(null_handler)
-            logger.propagate = False
-
+        # Import browser-use after setting environment variable
         try:
             from browser_use import Agent, Browser
             from browser_use import ChatBrowserUse
+
+            # Suppress all browser-use loggers after import
+            def suppress_browser_use_logs():
+                for logger_name in [
+                    "browser_use",
+                    "Agent",
+                    "BrowserSession",
+                    "service",
+                    "tools",
+                ]:
+                    logger = logging.getLogger(logger_name)
+                    logger.setLevel(logging.CRITICAL)
+                    logger.handlers.clear()
+                    logger.addHandler(logging.NullHandler())
+                    logger.propagate = False
+
+            suppress_browser_use_logs()
         except ImportError:
             result = {
                 "success": False,
                 "message": None,
-                "error": "browser-use is required for agent mode. Install it with: pip install 'reverse-api-engineer[agent]' or pip install browser-use",
+                "error": "browser-use is required for agent mode. Install it with: pip install git+https://github.com/browser-use/browser-use.git@49a345fb19e9f12befc5cc1658e0033873892455",
             }
             console.print(f" [red]error:[/red] {result['error']}")
             return result
 
         result = {"success": False, "message": None, "error": None}
         browser = None
-        memory_handler = None
 
         try:
             # Parse agent model and validate API key
@@ -786,60 +761,41 @@ class AgentBrowser:
                 console.print(f" [red]error:[/red] {result['error']}")
                 return result
 
+            suppress_browser_use_logs()
+
             console.print(f" [dim]starting browser with har...[/dim]")
             browser = Browser(
                 record_har_path=str(self.har_path),
                 record_har_mode="full",
                 record_har_content="attach",
             )
+
+            suppress_browser_use_logs()
+
             await browser.start()
+
+            suppress_browser_use_logs()
 
             console.print(f" [dim]browser started[/dim]")
 
             task = self.prompt
 
-            # Set up memory log handler
-            memory_handler = MemoryLogHandler(console)
-            memory_handler.setLevel(logging.INFO)
-            browser_use_logger.addHandler(memory_handler)
-            agent_logger.addHandler(memory_handler)
-
             agent = Agent(task=task, llm=llm, browser=browser)
+
+            suppress_browser_use_logs()
+
             agent_result = await agent.run()
 
-            if memory_handler:
-                browser_use_logger.removeHandler(memory_handler)
-                agent_logger.removeHandler(memory_handler)
-
-            # Extract final result from agent_result
+            # Extract final result using browser-use's built-in method
             final_message = None
-            if agent_result:
-                if hasattr(agent_result, "all_results") and agent_result.all_results:
-                    last_result = agent_result.all_results[-1]
-                    if hasattr(last_result, "text") and last_result.text:
-                        final_message = last_result.text
-                    elif hasattr(last_result, "result") and last_result.result:
-                        final_message = str(last_result.result)
-                elif hasattr(agent_result, "result"):
-                    final_message = str(agent_result.result)
-                elif hasattr(agent_result, "text"):
-                    final_message = agent_result.text
-                else:
-                    msg_str = str(agent_result)
-                    if "Final Result:" in msg_str:
-                        parts = msg_str.split("Final Result:")
-                        if len(parts) > 1:
-                            final_message = parts[-1].strip()
-                    else:
-                        final_message = msg_str
+            if agent_result and hasattr(agent_result, "final_result"):
+                final_result_attr = agent_result.final_result
+                final_message = final_result_attr() if callable(final_result_attr) else final_result_attr
 
             result["success"] = True
             result["message"] = final_message or "Task completed"
 
         except Exception as e:
-            if memory_handler:
-                browser_use_logger.removeHandler(memory_handler)
-                agent_logger.removeHandler(memory_handler)
             result["error"] = str(e)
             console.print(f" [yellow]agent error: {e}[/yellow]")
         finally:
@@ -908,7 +864,10 @@ class AgentBrowser:
                 empty_har = {
                     "log": {
                         "version": "1.2",
-                        "creator": {"name": "reverse-api-engineer", "version": "0.2.0"},
+                        "creator": {
+                            "name": "reverse-api-engineer",
+                            "version": __version__,
+                        },
                         "pages": [],
                         "entries": [],
                     }
@@ -1062,11 +1021,11 @@ class AgentBrowser:
 
             if result.get("success"):
                 console.print(f" [green]agent task completed[/green]")
-                if result.get("message"):
-                    msg = result["message"]
+                msg = result.get("message", "").strip()
+                if msg:
                     if len(msg) > 500:
                         msg = msg[:500] + "..."
-                    console.print(f" [dim]result:[/dim] [white]{msg}[/white]")
+                    console.print(f" [dim]result:[/dim]\n [white]{msg}[/white]")
             else:
                 error = result.get("error", "unknown error")
                 console.print(f" [yellow]agent error: {error}[/yellow]")

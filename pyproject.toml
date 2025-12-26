@@ -1,6 +1,6 @@
 [project]
 name = "reverse-api-engineer"
-version = "0.2.2"
+version = "0.2.3"
 description = "A tool to capture browser traffic for API reverse engineering"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -35,7 +35,8 @@ dependencies = [
 
 [project.optional-dependencies]
 agent = [
-    "browser-use",
+    # browser-use must be installed separately from git (PyPI doesn't allow git dependencies)
+    # See installation instructions in README
     "stagehand"
 ]
 

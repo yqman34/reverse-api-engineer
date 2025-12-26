@@ -38,9 +38,11 @@ CLI tool that captures browser traffic and automatically generates production-re
 # Basic installation (manual and engineer modes)
 pip install reverse-api-engineer
 
-# With agent mode support (includes browser-use)
+# With agent mode support
 pip install 'reverse-api-engineer[agent]'
-pip install git+https://github.com/browser-use/browser-use.git@49a345fb19e9f12befc5cc1658e0033873892455T
+
+# Install browser-use with HAR recording support (required for agent mode)
+pip install git+https://github.com/browser-use/browser-use.git@49a345fb19e9f12befc5cc1658e0033873892455
 ```
 
 ### Using uv (recommended)
@@ -48,9 +50,8 @@ pip install git+https://github.com/browser-use/browser-use.git@49a345fb19e9f12be
 # Basic installation
 uv tool install reverse-api-engineer
 
-# With agent mode support
-uv tool install 'reverse-api-engineer[agent]'
-uv pip install git+https://github.com/browser-use/browser-use.git@49a345fb19e9f12befc5cc1658e0033873892455
+# With agent mode support (includes browser-use with HAR recording)
+uv tool install 'reverse-api-engineer[agent]' --with 'browser-use @ git+https://github.com/browser-use/browser-use.git@49a345fb19e9f12befc5cc1658e0033873892455'
 ```
 
 ### From source
@@ -106,7 +107,7 @@ reverse-api-engineer engineer <run_id>
 
 Fully automated browser interaction using AI agents:
 
-1. Install with agent support: `pip install 'reverse-api-engineer[agent]'` or `uv tool install 'reverse-api-engineer[agent]'`
+1. Install with agent support (see installation instructions above for pip or uv)
 2. Start the CLI: `reverse-api-engineer`
 3. Switch to agent mode (Shift+Tab until you see `[agent]`)
 4. Enter your task description (e.g., "Click on the first job listing")
@@ -115,10 +116,7 @@ Fully automated browser interaction using AI agents:
 7. HAR is captured automatically
 8. Optionally run reverse engineering to generate API client
 
-**Note:** If you need a specific version of browser-use from git, install it separately:
-```bash
-pip install git+https://github.com/browser-use/browser-use.git@<commit-hash>
-```
+**Important:** Browser-use must be installed from the specific git commit shown in the installation instructions above. This version includes HAR recording support which is not yet available in the PyPI release.
 
 **Agent Provider Configuration:**
 - **Browser-Use** (default): Supports Browser-Use LLM, OpenAI, and Google models

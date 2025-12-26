@@ -1,6 +1,7 @@
 """Reverse engineering module with SDK dispatch."""
 
 import asyncio
+import logging
 from pathlib import Path
 from typing import Optional, Dict, Any
 
@@ -15,6 +16,10 @@ from claude_agent_sdk import (
 )
 
 from .base_engineer import BaseEngineer
+
+# Suppress claude_agent_sdk logs
+logging.getLogger("claude_agent_sdk").setLevel(logging.WARNING)
+logging.getLogger("claude_agent_sdk._internal.transport.subprocess_cli").setLevel(logging.WARNING)
 
 
 class ClaudeEngineer(BaseEngineer):
