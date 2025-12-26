@@ -678,9 +678,10 @@ class AgentBrowser:
         import logging
         import os
 
-        # Set browser-use logging level to warning to suppress INFO logs
+        # Set before importing to ensure it takes effect
         os.environ['BROWSER_USE_LOGGING_LEVEL'] = 'WARNING'
 
+        # Import browser-use after setting environment variable
         try:
             from browser_use import Agent, Browser
             from browser_use import ChatBrowserUse
@@ -788,7 +789,8 @@ class AgentBrowser:
             # Extract final result using browser-use's built-in method
             final_message = None
             if agent_result and hasattr(agent_result, "final_result"):
-                final_message = agent_result.final_result()
+                final_result_attr = agent_result.final_result
+                final_message = final_result_attr() if callable(final_result_attr) else final_result_attr
 
             result["success"] = True
             result["message"] = final_message or "Task completed"
@@ -1019,8 +1021,8 @@ class AgentBrowser:
 
             if result.get("success"):
                 console.print(f" [green]agent task completed[/green]")
-                if result.get("message") and result["message"] != "Task completed":
-                    msg = result["message"]
+                msg = result.get("message", "").strip()
+                if msg:
                     if len(msg) > 500:
                         msg = msg[:500] + "..."
                     console.print(f" [dim]result:[/dim]\n [white]{msg}[/white]")
