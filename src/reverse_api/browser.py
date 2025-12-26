@@ -19,6 +19,7 @@ from rich.console import Console
 from rich.status import Status
 
 from .utils import get_har_dir, get_timestamp
+from . import __version__
 
 console = Console()
 
@@ -386,7 +387,7 @@ class ManualBrowser:
         # Wait for browser to close
         try:
             while self._context.pages:
-                self._context.pages[0].wait_for_timeout(100) 
+                self._context.pages[0].wait_for_timeout(100)
         except Exception:
             pass
 
@@ -435,7 +436,7 @@ class ManualBrowser:
                     time.sleep(1)
 
                     status.update(" [dim]saving har file...[/dim]")
-                    self._context.close() 
+                    self._context.close()
 
                     if self.har_path.exists():
                         har_size = self.har_path.stat().st_size
@@ -908,7 +909,10 @@ class AgentBrowser:
                 empty_har = {
                     "log": {
                         "version": "1.2",
-                        "creator": {"name": "reverse-api-engineer", "version": "0.2.0"},
+                        "creator": {
+                            "name": "reverse-api-engineer",
+                            "version": __version__,
+                        },
                         "pages": [],
                         "entries": [],
                     }
