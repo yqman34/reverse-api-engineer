@@ -39,6 +39,9 @@ agent = [
     # See installation instructions in README
     "stagehand"
 ]
+pricing = [
+    "litellm>=1.0.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/kalil0321/reverse-api-engineer"

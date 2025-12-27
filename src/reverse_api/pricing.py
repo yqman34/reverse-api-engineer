@@ -11,10 +11,10 @@ MODEL_PRICING = {
     },
     "claude-opus-4-5": {
         "input": 15.00,
-        "output": 75.00,
-        "cache_creation": 18.75,
-        "cache_read": 1.50,
-        "reasoning": 75.00,
+        "output": 25.00,
+        "cache_creation": 6.25,
+        "cache_read": 0.50,
+        "reasoning": 25.00,
     },
     "claude-haiku-4-5": {
         "input": 1.00,
@@ -24,14 +24,108 @@ MODEL_PRICING = {
         "reasoning": 5.00,
     },
     "google-gemini-3-flash": {
-        "input": 0.00015,
-        "output": 0.0006,
+        "input": 0.5,
+        "output": 3,
+        "cache_creation": 1,
+        "cache_read": 0.05,
+        "reasoning": 3,
     },
     "google-gemini-3-pro": {
-        "input": 0.0003,
-        "output": 0.0012,
+        "input": 3,
+        "output": 12,
+        "cache_creation": 4.5, 
+        "cache_read": 0.20, 
+        "reasoning": 12,
     },
 }
+
+
+# Model name mapping for LiteLLM compatibility
+# Maps our model IDs to possible LiteLLM model name variations
+_LITELLM_MODEL_MAP = {
+    "claude-sonnet-4-5": [
+        "claude-sonnet-4-5",
+        "anthropic.claude-sonnet-4-5",
+        "claude-3-5-sonnet-20241022",
+    ],
+    "claude-opus-4-5": [
+        "claude-opus-4-5",
+        "anthropic.claude-opus-4-5",
+    ],
+    "claude-haiku-4-5": [
+        "claude-haiku-4-5",
+        "anthropic.claude-haiku-4-5",
+    ],
+    "google-gemini-3-flash": [
+        "gemini-3-flash",
+        "google/gemini-3-flash",
+        "gemini-flash",
+    ],
+    "google-gemini-3-pro": [
+        "gemini-3-pro",
+        "google/gemini-3-pro",
+        "gemini-pro",
+    ],
+}
+
+
+def _get_pricing_from_litellm(model_id: str) -> dict[str, float] | None:
+    """Try to get pricing from LiteLLM package.
+
+    This function attempts to fetch pricing data from the LiteLLM library,
+    which maintains pricing for 100+ LLM models. This is used as a fallback
+    when a model is not found in the local MODEL_PRICING dictionary.
+
+    Args:
+        model_id: Model identifier to look up
+
+    Returns:
+        Dictionary with pricing per million tokens in the format:
+        {
+            "input": float,
+            "output": float,
+            "cache_creation": float,
+            "cache_read": float,
+            "reasoning": float,
+        }
+        Returns None if:
+        - LiteLLM is not installed
+        - Model is not found in LiteLLM's database
+        - An error occurs during lookup
+    """
+    try:
+        # Import LiteLLM - may fail if not installed as optional dependency
+        from litellm import model_cost
+
+        # Try direct lookup and mapped variations
+        model_names_to_try = [model_id]
+        if model_id in _LITELLM_MODEL_MAP:
+            model_names_to_try.extend(_LITELLM_MODEL_MAP[model_id])
+
+        for model_name in model_names_to_try:
+            if model_name in model_cost:
+                litellm_pricing = model_cost[model_name]
+
+                # Convert LiteLLM's per-token cost to our per-million-tokens format
+                # LiteLLM uses values like 3e-06 for $0.000003 per token
+                # We need to multiply by 1,000,000 to get per-million cost
+                pricing = {
+                    "input": litellm_pricing.get("input_cost_per_token", 0) * 1_000_000,
+                    "output": litellm_pricing.get("output_cost_per_token", 0) * 1_000_000,
+                    "cache_creation": litellm_pricing.get("cache_creation_input_token_cost", 0) * 1_000_000,
+                    "cache_read": litellm_pricing.get("cache_read_input_token_cost", 0) * 1_000_000,
+                    "reasoning": litellm_pricing.get("output_cost_per_token", 0) * 1_000_000,
+                }
+
+                if pricing["input"] > 0 or pricing["output"] > 0:
+                    return pricing
+
+        return None
+
+    except ImportError:
+        return None
+    except Exception:
+        return None
 
 
 def calculate_cost(
@@ -44,6 +138,11 @@ def calculate_cost(
 ) -> float:
     """Calculate cost for a model based on token usage.
 
+    Uses a 3-tier fallback system:
+    1. Local MODEL_PRICING dictionary (highest priority)
+    2. LiteLLM pricing package (if installed and model found)
+    3. Claude Sonnet 4.5 pricing (ultimate fallback)
+
     Args:
         model_id: Model identifier (e.g., "claude-sonnet-4-5")
         input_tokens: Number of input tokens
@@ -55,8 +154,12 @@ def calculate_cost(
     Returns:
         Total cost in USD
     """
-    # default to sonnet if unknown as this is the most common model
-    pricing = MODEL_PRICING.get(model_id, MODEL_PRICING["claude-sonnet-4-5"])
+    if model_id in MODEL_PRICING:
+        pricing = MODEL_PRICING[model_id]
+    elif model_id and (litellm_pricing := _get_pricing_from_litellm(model_id)):
+        pricing = litellm_pricing
+    else:
+        pricing = MODEL_PRICING["claude-sonnet-4-5"]
 
     cost = (
         (input_tokens / 1_000_000 * pricing["input"])

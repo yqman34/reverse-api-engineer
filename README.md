@@ -75,6 +75,25 @@ Install Playwright browsers:
 playwright install chromium
 ```
 
+### Enhanced Pricing Support (Optional)
+
+By default, Reverse API Engineer includes pricing data for the most common models (Claude 4.5, Gemini 3). For extended model coverage (100+ additional models including OpenAI GPT, Mistral, DeepSeek, and more), install with pricing extras:
+
+```bash
+# With uv
+uv tool install 'reverse-api-engineer[pricing]'
+
+# With pip
+pip install 'reverse-api-engineer[pricing]'
+```
+
+This enables automatic pricing lookup via [LiteLLM](https://github.com/BerriAI/litellm) for models not in the built-in database. The pricing system uses a 3-tier fallback:
+1. **Local pricing** (highest priority) - Built-in pricing for common models
+2. **LiteLLM pricing** (if installed) - Extended coverage for 100+ models
+3. **Default pricing** (ultimate fallback) - Uses Claude Sonnet 4.5 pricing
+
+Cost tracking will always work, with or without the pricing extras installed.
+
 ## 🚀 Quick Start
 
 Launch the interactive CLI:
