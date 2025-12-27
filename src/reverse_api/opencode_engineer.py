@@ -40,12 +40,15 @@ class OpenCodeEngineer(BaseEngineer):
     }
 
     def __init__(self, *args, **kwargs):
+        # Pop OpenCode-specific kwargs before passing to parent class
+        self.opencode_provider = kwargs.pop("opencode_provider", "anthropic")
+        self.opencode_model = kwargs.pop("opencode_model", "claude-sonnet-4-5")
+        
         super().__init__(*args, **kwargs)
+        
         # Override UI with OpenCode-specific version
         self.opencode_ui = OpenCodeUI(verbose=kwargs.get("verbose", True))
         self.ui = self.opencode_ui  # Ensure base class uses our specialized UI
-        self.opencode_provider = kwargs.get("opencode_provider", "anthropic")
-        self.opencode_model = kwargs.get("opencode_model", "claude-sonnet-4-5")
         self._last_error: Optional[str] = None
         self._session_id: Optional[str] = None
         self._last_event_time = 0.0
