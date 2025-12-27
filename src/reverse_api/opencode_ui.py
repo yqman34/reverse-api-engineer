@@ -4,9 +4,6 @@ from typing import Optional, Dict, Any
 from rich.console import Console
 from rich.live import Live
 from rich.text import Text
-from rich.spinner import Spinner
-from rich.table import Table
-from rich.panel import Panel
 
 # Theme configuration (matching tui.py)
 THEME_PRIMARY = "#ff5f50"
