@@ -1,8 +1,6 @@
 <div align="center">
-  <img src="assets/reverse-api-banner.svg" alt="Reverse API Engineer Banner">
+  <img src="https://raw.githubusercontent.com/kalil0321/reverse-api-engineer/main/assets/reverse-api-banner.svg" alt="Reverse API Engineer Banner">
 </div>
-
-# Reverse API Engineer
 
 [![PyPI version](https://badge.fury.io/py//reverse-api-engineer.svg)](https://badge.fury.io/py/reverse-api-engineer)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
@@ -10,7 +8,7 @@
 
 CLI tool that captures browser traffic and automatically generates production-ready Python API clients. No more manual reverse engineering—just browse, capture, and get clean API code.
 
-![Reverse API Engineer Demo](assets/reverse-api-engineer.gif)
+![Reverse API Engineer Demo](https://raw.githubusercontent.com/kalil0321/reverse-api-engineer/main/assets/reverse-api-engineer.gif)
 
 ## Table of Contents
 
