@@ -2,11 +2,33 @@
 
 import time
 import shutil
+from datetime import datetime
 from pathlib import Path
 from typing import Optional, Callable
 from threading import Thread, Event
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, FileSystemEvent
+
+
+def get_available_directory(base_path: Path, base_name: str) -> Path:
+    """
+    Find an available directory name, appending timestamp if needed.
+
+    If the base directory exists and is not empty, returns a new directory
+    with timestamp suffix. Otherwise returns the base directory.
+    """
+    target_dir = base_path / base_name
+
+    # If directory doesn't exist or is empty, use it
+    if not target_dir.exists() or (
+        target_dir.is_dir() and not any(target_dir.iterdir())
+    ):
+        return target_dir
+
+    # Otherwise, create a new directory with timestamp
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    folder_name = f"{base_name}_{timestamp}"
+    return base_path / folder_name
 
 
 class SyncHandler(FileSystemEventHandler):
@@ -180,12 +202,25 @@ class FileSyncWatcher:
 
 
 def sync_directory_once(source_dir: Path, dest_dir: Path):
-    """Perform a one-time sync of a directory."""
-    dest_dir.mkdir(parents=True, exist_ok=True)
+    """
+    Perform a one-time sync of a directory.
+
+    If dest_dir already exists and is not empty, finds an available
+    directory with _iter{i} suffix instead of overwriting.
+    """
+    # Extract base path and name from dest_dir
+    base_path = dest_dir.parent
+    base_name = dest_dir.name
+
+    # Get available directory (won't overwrite existing non-empty dirs)
+    final_dest_dir = get_available_directory(base_path, base_name)
+    final_dest_dir.mkdir(parents=True, exist_ok=True)
 
     for item in source_dir.rglob("*"):
         if item.is_file():
             relative = item.relative_to(source_dir)
-            dest = dest_dir / relative
+            dest = final_dest_dir / relative
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(item, dest)
+
+    return final_dest_dir
