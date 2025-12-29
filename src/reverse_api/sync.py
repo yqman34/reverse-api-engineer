@@ -68,7 +68,7 @@ class SyncHandler(FileSystemEventHandler):
                 self._sync_file(file_path, is_delete)
             except Exception as e:
                 if self.on_error:
-                    self.on_error(f"permission denied: {Path(file_path).name}")
+                    self.on_error(f"Error syncing {Path(file_path).name}: {str(e)}")
 
     def _sync_file(self, source_path: str, is_delete: bool = False):
         """Sync a single file from source to destination."""
