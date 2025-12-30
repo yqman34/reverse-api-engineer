@@ -5,7 +5,7 @@ Combines browser automation via MCP with simultaneous API reverse engineering.
 
 import asyncio
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import httpx
 from claude_agent_sdk import (
@@ -262,7 +262,7 @@ Your final response should confirm the files were created and provide a brief su
                                 self.usage_metadata["estimated_cost_usd"] = cost
 
                                 # Display usage breakdown
-                                self.ui.console.print(f"  [dim]Usage:[/dim]")
+                                self.ui.console.print(f"  [dim]Usage:[/dim]")  # noqa: F541
                                 if input_tokens > 0:
                                     self.ui.console.print(
                                         f"  [dim]  input: {input_tokens:,} tokens[/dim]"

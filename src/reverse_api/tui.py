@@ -1,6 +1,5 @@
 """Rich Terminal UI for Claude SDK interactions."""
 
-from typing import Optional
 from rich.console import Console
 from rich.text import Text
 
@@ -135,7 +134,7 @@ class ClaudeUI:
         """Display a progress message."""
         self.console.print(f"  [dim italic]{message}[/dim italic]")
 
-    def success(self, script_path: str, local_path: Optional[str] = None) -> None:
+    def success(self, script_path: str, local_path: str | None = None) -> None:
         """Display success message with generated script path."""
         self.console.print()
         self.console.print(" [dim]decoding complete[/dim]")

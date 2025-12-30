@@ -1,5 +1,5 @@
-import re
 import asyncio
+import re
 from pathlib import Path
 
 import click
@@ -188,9 +188,7 @@ def prompt_interactive_options(
         mode = mode_state["mode"]
         mode_color = MODE_COLORS.get(mode, THEME_PRIMARY)
 
-        return HTML(
-            f'<style fg="{mode_color}">[{mode}]</style> <style fg="{mode_color}" bold="true">&gt;</style> '
-        )
+        return HTML(f'<style fg="{mode_color}">[{mode}]</style> <style fg="{mode_color}" bold="true">&gt;</style> ')
 
     if prompt is None:
         pt_style = PtStyle.from_dict(
@@ -362,9 +360,7 @@ def repl_loop():
                 else:
                     # Unknown command - show error and available commands
                     console.print(f" [red]Unknown command:[/red] {cmd}")
-                    console.print(
-                        " [dim]Available commands: /settings, /history, /messages, /help, /exit[/dim]"
-                    )
+                    console.print(" [dim]Available commands: /settings, /history, /messages, /help, /exit[/dim]")
                 continue
 
             mode = options.get("mode", "manual")
@@ -509,9 +505,7 @@ def handle_settings(mode_color=THEME_PRIMARY):
         return  # Exit settings to main prompt
 
     if action == "claude_code_model":
-        model_choices = [
-            Choice(title=c["name"].lower(), value=c["value"]) for c in get_model_choices()
-        ]
+        model_choices = [Choice(title=c["name"].lower(), value=c["value"]) for c in get_model_choices()]
         model_choices.append(Choice(title="back", value="back"))
         model = questionary.select(
             "",
@@ -659,7 +653,9 @@ def handle_settings(mode_color=THEME_PRIMARY):
         from .browser import parse_agent_model
 
         current = config_manager.get("stagehand_model", "openai/computer-use-preview-2025-03-11")
-        instruction = "(Format: 'openai/model' or 'anthropic/model', e.g., 'openai/computer-use-preview-2025-03-11' or 'anthropic/claude-sonnet-4-5-20250929')"
+        instruction = (
+            "(Format: 'openai/model' or 'anthropic/model', e.g., 'openai/computer-use-preview-2025-03-11' or 'anthropic/claude-sonnet-4-5-20250929')"
+        )
 
         new_model = questionary.text(
             " > stagehand model",
@@ -818,16 +814,10 @@ def handle_manual_help(mode_color=THEME_PRIMARY):
     table.add_column(style=f"{mode_color} bold", justify="left", width=30)
     table.add_column(style="white", justify="left")
 
-    table.add_row(
-        "<prompt>",
-        "Describe the task/goal for the session.\n[dim]Example: extract jobs from apple.com[/dim]"
-    )
+    table.add_row("<prompt>", "Describe the task/goal for the session.\n[dim]Example: extract jobs from apple.com[/dim]")
     table.add_row("", "")
 
-    table.add_row(
-        "Shift+Tab",
-        "Cycle to other modes (Engineer, Agent)."
-    )
+    table.add_row("Shift+Tab", "Cycle to other modes (Engineer, Agent).")
 
     console.print(table)
     console.print()
@@ -846,16 +836,10 @@ def handle_agent_help(mode_color=THEME_PRIMARY):
     table.add_column(style=f"{mode_color} bold", justify="left", width=30)
     table.add_column(style="white", justify="left")
 
-    table.add_row(
-        "<prompt>",
-        "Instruction for the autonomous agent.\n[dim]Example: Go to google.com and search for 'OpenAI'[/dim]"
-    )
+    table.add_row("<prompt>", "Instruction for the autonomous agent.\n[dim]Example: Go to google.com and search for 'OpenAI'[/dim]")
     table.add_row("", "")
 
-    table.add_row(
-        "Shift+Tab",
-        "Cycle to other modes (Manual, Engineer)."
-    )
+    table.add_row("Shift+Tab", "Cycle to other modes (Manual, Engineer).")
 
     console.print(table)
     console.print()
@@ -875,34 +859,22 @@ def handle_engineer_help(mode_color=THEME_PRIMARY):
     table.add_column(style=f"{mode_color} bold", justify="left", width=30)
     table.add_column(style="white", justify="left")
 
-    table.add_row(
-        "@id <run_id>",
-        "Switch context to a specific run ID.\n[dim]Example: @id abc123[/dim]"
-    )
+    table.add_row("@id <run_id>", "Switch context to a specific run ID.\n[dim]Example: @id abc123[/dim]")
     table.add_row("", "")
 
-    table.add_row(
-        "@id <run_id> <prompt>",
-        "Run engineer on a specific run with instructions.\n[dim]Example: @id abc123 extract user profile[/dim]"
-    )
+    table.add_row("@id <run_id> <prompt>", "Run engineer on a specific run with instructions.\n[dim]Example: @id abc123 extract user profile[/dim]")
     table.add_row("", "")
 
     table.add_row(
         "@id <run_id> --fresh <prompt>",
-        "Start fresh (ignore previous scripts) with new instructions.\n[dim]Example: @id abc123 --fresh restart analysis[/dim]"
+        "Start fresh (ignore previous scripts) with new instructions.\n[dim]Example: @id abc123 --fresh restart analysis[/dim]",
     )
     table.add_row("", "")
 
-    table.add_row(
-        "<run_id>",
-        "Quick context switch (same as @id <run_id>).\n[dim]Example: abc123[/dim]"
-    )
+    table.add_row("<run_id>", "Quick context switch (same as @id <run_id>).\n[dim]Example: abc123[/dim]")
     table.add_row("", "")
 
-    table.add_row(
-        "<prompt>",
-        "Run engineer on the *current* context/latest run.\n[dim]Example: improve error handling[/dim]"
-    )
+    table.add_row("<prompt>", "Run engineer on the *current* context/latest run.\n[dim]Example: improve error handling[/dim]")
 
     console.print(table)
     console.print()
@@ -1119,9 +1091,7 @@ def run_agent_capture(prompt=None, url=None, reverse_engineer=False, model=None,
 
     # Get agent models and provider from config
     browser_use_model = config_manager.get("browser_use_model", "bu-llm")
-    stagehand_model = config_manager.get(
-        "stagehand_model", "openai/computer-use-preview-2025-03-11"
-    )
+    stagehand_model = config_manager.get("stagehand_model", "openai/computer-use-preview-2025-03-11")
     agent_provider = config_manager.get("agent_provider", "browser-use")
 
     # Route to auto mode if configured
