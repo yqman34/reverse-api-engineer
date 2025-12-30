@@ -132,7 +132,7 @@ class ClaudeUI:
         """Display a progress message."""
         self.console.print(f"  [dim italic]{message}[/dim italic]")
 
-    def success(self, script_path: str, local_path: str = None) -> None:
+    def success(self, script_path: str, local_path: Optional[str] = None) -> None:
         """Display success message with generated script path."""
         self.console.print()
         self.console.print(" [dim]decoding complete[/dim]")
