@@ -4,9 +4,10 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Optional, Dict, Any
 
-from .utils import get_scripts_dir, get_timestamp
+from .utils import get_scripts_dir, generate_folder_name
 from .tui import ClaudeUI
 from .messages import MessageStore
+from .sync import FileSyncWatcher
 
 
 class BaseEngineer(ABC):
@@ -21,6 +22,9 @@ class BaseEngineer(ABC):
         additional_instructions: Optional[str] = None,
         output_dir: Optional[str] = None,
         verbose: bool = True,
+        enable_sync: bool = False,
+        sdk: str = "claude",
+        is_fresh: bool = False,
     ):
         self.run_id = run_id
         self.har_path = har_path
@@ -31,6 +35,63 @@ class BaseEngineer(ABC):
         self.ui = ClaudeUI(verbose=verbose)
         self.usage_metadata: Dict[str, Any] = {}
         self.message_store = MessageStore(run_id, output_dir)
+        self.enable_sync = enable_sync
+        self.sdk = sdk
+        self.is_fresh = is_fresh
+        self.sync_watcher: Optional[FileSyncWatcher] = None
+        self.local_scripts_dir: Optional[Path] = None
+
+    def start_sync(self):
+        """Start real-time file sync if enabled."""
+        if not self.enable_sync:
+            return
+
+        # Generate local directory name
+        base_name = generate_folder_name(self.prompt, sdk=self.sdk)
+        folder_name = base_name
+        local_dir = Path.cwd() / "scripts" / folder_name
+
+        # Handle existing folder - append suffix if needed
+        counter = 2
+        while local_dir.exists() and counter < 1000:
+            folder_name = f"{base_name}_{counter}"
+            local_dir = Path.cwd() / "scripts" / folder_name
+            counter += 1
+
+        self.local_scripts_dir = local_dir
+
+        # Create sync watcher
+        def on_sync(message):
+            self.ui.sync_flash(message)
+
+        def on_error(message):
+            self.ui.sync_error(message)
+
+        self.sync_watcher = FileSyncWatcher(
+            source_dir=self.scripts_dir,
+            dest_dir=local_dir,
+            on_sync=on_sync,
+            on_error=on_error,
+            debounce_ms=500,
+        )
+        self.sync_watcher.start()
+        self.ui.sync_started(str(local_dir))
+
+    def stop_sync(self):
+        """Stop real-time file sync."""
+        if self.sync_watcher:
+            try:
+                self.sync_watcher.stop()
+            except Exception as e:
+                self.ui.sync_error(f"Failed to stop sync watcher: {e}")
+            finally:
+                self.sync_watcher = None
+
+    def get_sync_status(self) -> Optional[dict]:
+        """Get current sync status."""
+        if self.sync_watcher:
+            return self.sync_watcher.get_status()
+        return None
 
     def _build_analysis_prompt(self) -> str:
         """Build the prompt for analyzing the HAR file."""
@@ -141,9 +202,31 @@ After testing, provide your final response with:
 Your final output should confirm that the files have been created and provide a brief summary of what was accomplished. Do not include the full code in your response - just confirm the files were saved and summarize the key findings.
 """
         if self.additional_instructions:
-            base_prompt += f"\n\nAdditional instructions:\n{self.additional_instructions}"
-        
-        return base_prompt
+            base_prompt += (
+                f"\n\nAdditional instructions:\n{self.additional_instructions}"
+            )
+
+        tag_context = f"""
+## Tag-Based Workflows
+
+This session uses tag-based context loading:
+
+- **@id <run_id>**: Re-engineer mode active
+  - Target run: {self.run_id}
+  - HAR location: {self.har_path.parent}
+  - Existing scripts: {self.scripts_dir}
+  - Message history: {self.message_store.messages_path.parent} (available for reference if needed)
+  - Fresh mode: {str(self.is_fresh).lower()}
+
+By default, treat this as an iterative refinement. The user's prompt describes
+changes or improvements to make to the existing script. If fresh mode is enabled,
+ignore previous implementation and start from scratch.
+
+Note: Full message history is available at the messages path above if you need
+to understand previous context, but it is not automatically loaded into this
+conversation.
+"""
+        return base_prompt + tag_context
 
     @abstractmethod
     async def analyze_and_generate(self) -> Optional[Dict[str, Any]]:
