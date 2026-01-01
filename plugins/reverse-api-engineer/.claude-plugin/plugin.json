@@ -1,0 +1,38 @@
+{
+    "name": "reverse-api-engineer",
+    "description": "A plugin to reverse engineer APIs from websites",
+    "version": "1.0.0",
+    "author": {
+        "name": "Kalil Sama Bouzigues",
+        "email": "kalil.bouzigues@gmail.com",
+        "url": "https://github.com/kalil0321"
+    },
+    "repository": "https://github.com/kalil0321/reverse-api-engineer",
+    "license": "MIT",
+    "keywords": [
+        "api",
+        "reverse-engineering",
+        "har",
+        "web-scraping",
+        "automation",
+        "browser",
+        "playwright",
+        "network-analysis",
+        "api-client",
+        "code-generation",
+        "python",
+        "traffic-capture",
+        "http",
+        "authentication",
+        "endpoints"
+    ],
+    "mcpServers": {
+        "rae-playwright-mcp": {
+            "command": "npx",
+            "args": [
+                "rae-playwright-mcp@latest",
+                "run-mcp-server"
+            ]
+        }
+    }
+}

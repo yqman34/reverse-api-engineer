@@ -28,10 +28,10 @@ Both inherit from `BaseEngineer` (abstract base class) which defines the common 
 - **UI** (`tui.py`, `opencode_ui.py`): Rich-based terminal UI for progress tracking
 
 ### Data Flow
-1. Browser captures HAR → saved to `~/.reverse-api/runs/{run_id}/har/`
+1. Browser captures HAR → saved to `~/.reverse-api/runs/har/{run_id}`
 2. Engineer analyzes HAR with LLM → generates Python scripts
 3. Scripts saved to:
-   - `~/.reverse-api/runs/{run_id}/scripts/` (permanent)
+   - `~/.reverse-api/runs/scripts/{run_id}` (permanent)
    - `./scripts/{descriptive_name}/` (local copy)
 
 ## Development Commands
@@ -168,7 +168,7 @@ API keys via environment variables: `BROWSER_USE_API_KEY`, `OPENAI_API_KEY`, `AN
 ### Debugging
 - **OpenCode**: Set `OPENCODE_DEBUG=1` for detailed logs
 - **Stagehand logs**: Suppressed by `_suppress_stagehand_logs()` in `browser.py`
-- **Message logs**: All LLM interactions saved to `~/.reverse-api/runs/{run_id}/messages/`
+- **Message logs**: All LLM interactions saved to `~/.reverse-api/runs/messages/{run_id}`
 
 ## File Structure Notes
 
@@ -190,10 +190,10 @@ src/reverse_api/
 ~/.reverse-api/
 ├── config.json         # User configuration
 ├── history.json        # Run history with costs
-└── runs/{run_id}/      # Per-run data
-    ├── har/            # Captured traffic
-    ├── scripts/        # Generated API clients
-    └── messages/       # LLM conversation logs
+└── runs/      
+    ├── har/{id}           # Captured traffic
+    ├── scripts/{id}        # Generated API clients
+    └── messages/{id}.jsonl       # LLM conversation logs
 ```
 
 ## Dependencies Management
