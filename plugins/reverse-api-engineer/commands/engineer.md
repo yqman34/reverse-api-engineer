@@ -37,7 +37,7 @@ elif '/' in arg or '\\' in arg:
 elif arg:
     # Looks like a run_id
     run_id = arg
-    har_path = f"~/.reverse-api/runs/har/{run_id}/network.har"
+    har_path = f"~/.reverse-api/runs/har/{run_id}/recording.har"
 else:
     # No argument provided
     Error: "Please provide either a run_id or path to HAR file"
@@ -61,7 +61,7 @@ If using run_id but HAR file doesn't exist:
 ```
 Error: "No HAR file found for run_id: {run_id}
 
-Expected location: ~/.reverse-api/runs/har/{run_id}/network.har
+Expected location: ~/.reverse-api/runs/har/{run_id}/recording.har
 
 Available runs:
 {list runs in ~/.reverse-api/runs/}"
@@ -379,7 +379,7 @@ To regenerate with different focus:
 /reverse-api-engineer:engineer abc-123-def
 
 # Using direct path
-/reverse-api-engineer:engineer ~/.reverse-api/runs/xyz-789/har/network.har
+/reverse-api-engineer:engineer ~/.reverse-api/runs/har/xyz-789/recording.har
 
 # Using relative path
 /reverse-api-engineer:engineer ./captures/myapp.har

@@ -134,7 +134,7 @@ Since you have a HAR file, use engineer mode to analyze it:
 
 /reverse-api-engineer:engineer <path-to-har-file>
 
-Example: /reverse-api-engineer:engineer ~/.reverse-api/runs/abc123/har/network.har
+Example: /reverse-api-engineer:engineer ~/.reverse-api/runs/abc123/har/recording.har
 
 The AI will analyze the traffic and generate a production-ready Python API client.
 ```

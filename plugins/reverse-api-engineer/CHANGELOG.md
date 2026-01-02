@@ -5,7 +5,7 @@ All notable changes to the Reverse API Engineer plugin will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2026-01-01
+## [1.0.0] - 2026-01-02
 
 ### Added
 - Initial release of Reverse API Engineer plugin
@@ -21,11 +21,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Integration with rae-playwright-mcp for browser control
 - UUID generation and run history tracking
 - Support for both run_id and direct HAR path references
-
-### Features
-- Generate production-ready Python API clients from browser traffic
-- Automatic filtering of irrelevant HAR entries (assets, analytics, ads)
-- Support for multiple authentication patterns (Bearer, API keys, OAuth)
-- Error handling and logging in generated code
-- Type hints and comprehensive documentation
-- Session management for connection reuse

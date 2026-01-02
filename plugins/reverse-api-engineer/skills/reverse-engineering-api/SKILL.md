@@ -34,8 +34,8 @@ This skill enables you to reverse engineer web APIs by:
 When starting a browser session for API capture:
 
 1. Launch browser with HAR recording enabled via Playwright MCP
-2. Generate a unique run ID: `{uuid}`
-3. Configure HAR output path: `~/.reverse-api/runs/har/{id}/network.har`
+2. Generate a unique run ID: `{run_id}`
+3. Configure HAR output path: `~/.reverse-api/runs/har/{run_id}/recording.har`
 
 ### During Capture
 
@@ -49,7 +49,7 @@ Navigate autonomously to trigger the API calls needed:
 
 When the browser closes, note the HAR file location:
 ```
-HAR file saved to: ~/.reverse-api/runs/har/{run_id}/network.har
+HAR file saved to: ~/.reverse-api/runs/har/{run_id}/recording.har
 ```
 
 ## Phase 2: HAR Analysis
@@ -277,7 +277,7 @@ User: "Create an API client for the Apple Jobs website"
    Navigate to jobs.apple.com
    Perform search, browse listings
    Close browser
-   HAR saved to: ~/.reverse-api/runs/har/{id}/network.har
+   HAR saved to: ~/.reverse-api/runs/har/{run_id}/recording.har
 
    Note: you can monitor browser requests with the Playwright MCP
 

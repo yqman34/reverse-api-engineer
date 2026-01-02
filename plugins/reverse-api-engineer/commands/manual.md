@@ -43,7 +43,7 @@ run_id = uuid4() (e.g., "abc-123-def-456")
 Setup paths:
 ```
 har_dir = ~/.reverse-api/runs/har/{run_id}/
-har_path = {har_dir}/network.har
+har_path = {har_dir}/recording.har
 ```
 
 Ensure directory exists:
@@ -61,7 +61,7 @@ Parameters:
   - url: {url} or "about:blank" if no URL provided
   - options:
       - record_har: true
-      - har_path: ~/.reverse-api/runs/har/{run_id}/network.har
+      - har_path: ~/.reverse-api/runs/har/{run_id}/recording.har
 ```
 
 Inform the user:
@@ -70,7 +70,7 @@ Browser launched with HAR recording enabled.
 Navigate to the website and interact with it to trigger API calls.
 Close the browser when you're done to proceed with analysis.
 
-HAR will be saved to: ~/.reverse-api/runs/har/{run_id}/network.har
+HAR will be saved to: ~/.reverse-api/runs/har/{run_id}/recording.har
 ```
 
 ### Step 4: Wait for Browser to Close
@@ -79,7 +79,7 @@ Monitor the browser session. When it closes, the HAR file will be saved automati
 
 Verify HAR file exists:
 ```bash
-ls -lh ~/.reverse-api/runs/har/{run_id}/network.har
+ls -lh ~/.reverse-api/runs/har/{run_id}/recording.har
 ```
 
 If file doesn't exist or is empty:
@@ -93,7 +93,7 @@ Exit with error
 Read and parse the HAR file:
 ```python
 import json
-with open("~/.reverse-api/runs/har/{run_id}/network.har", "r") as f:
+with open("~/.reverse-api/runs/har/{run_id}/recording.har", "r") as f:
     har_data = json.load(f)
 ```
 
@@ -141,7 +141,7 @@ Auto-generated API client for {domain}
 Generated from HAR capture on {date}
 
 Run ID: {run_id}
-HAR file: ~/.reverse-api/runs/har/{run_id}/network.har
+HAR file: ~/.reverse-api/runs/har/{run_id}/recording.har
 """
 
 import requests
@@ -223,7 +223,7 @@ Auto-generated Python API client from browser traffic capture.
 ## Generated From
 
 - **Run ID**: {run_id}
-- **HAR File**: ~/.reverse-api/runs/har/{run_id}/network.har
+- **HAR File**: ~/.reverse-api/runs/har/{run_id}/recording.har
 - **Date**: {date}
 - **Base URL**: {base_url}
 
@@ -272,7 +272,7 @@ Update `~/.reverse-api/history.json` with run metadata:
   "task": "{task}",
   "url": "{url}",
   "timestamp": "{ISO timestamp}",
-  "har_path": "~/.reverse-api/runs/har/{run_id}/network.har",
+  "har_path": "~/.reverse-api/runs/har/{run_id}/recording.har",
   "output_dir": "./scripts/{task_name}/",
   "status": "completed"
 }
@@ -285,7 +285,7 @@ Present final summary to user:
 API client generated successfully!
 
 Run ID: {run_id}
-HAR file: ~/.reverse-api/runs/har/{run_id}/network.har
+HAR file: ~/.reverse-api/runs/har/{run_id}/recording.har
 
 Generated files:
 - ./scripts/{task_name}/api_client.py

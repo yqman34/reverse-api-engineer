@@ -43,7 +43,7 @@ run_id = uuid4() (e.g., "abc-123-def-456")
 Setup paths:
 ```
 har_dir = ~/.reverse-api/runs/har/{run_id}
-har_path = {har_dir}/network.har
+har_path = {har_dir}/recording.har
 ```
 
 Ensure directory exists:
@@ -61,7 +61,7 @@ Parameters:
   - url: {url} or "about:blank" if no URL provided
   - options:
       - record_har: true
-      - har_path: ~/.reverse-api/runs/har/{run_id}/network.har
+      - har_path: ~/.reverse-api/runs/har/{run_id}/recording.har
 ```
 
 Inform the user:
@@ -71,7 +71,7 @@ Task: {task}
 Starting URL: {url}
 
 I'll navigate autonomously and capture all API traffic.
-HAR will be saved to: ~/.reverse-api/runs/har/{run_id}/network.har
+HAR will be saved to: ~/.reverse-api/runs/har/{run_id}/recording.har
 ```
 
 ### Step 4: Autonomous Navigation
@@ -122,8 +122,8 @@ Progress update:
 When navigation is complete, verify HAR file exists and contains data:
 
 ```bash
-if [ -f ~/.reverse-api/runs/har/{run_id}/network.har ]; then
-    size=$(ls -lh ~/.reverse-api/runs/har/{run_id}/network.har | awk '{print $5}')
+if [ -f ~/.reverse-api/runs/har/{run_id}/recording.har ]; then
+    size=$(ls -lh ~/.reverse-api/runs/har/{run_id}/recording.har | awk '{print $5}')
     echo "HAR file captured: $size"
 else
     echo "Error: HAR file not found"
@@ -134,7 +134,7 @@ fi
 Read HAR file to count entries:
 ```python
 import json
-with open("~/.reverse-api/runs/har/{run_id}/network.har", "r") as f:
+with open("~/.reverse-api/runs/har/{run_id}/recording.har", "r") as f:
     har_data = json.load(f)
     entry_count = len(har_data["log"]["entries"])
 ```
@@ -195,7 +195,7 @@ Generated from autonomous agent capture on {date}
 
 Task: {task}
 Run ID: {run_id}
-HAR file: ~/.reverse-api/runs/har/{run_id}/network.har
+HAR file: ~/.reverse-api/runs/har/{run_id}/recording.har
 """
 
 import requests
@@ -277,7 +277,7 @@ Auto-generated Python API client from autonomous browser agent.
 ## Generated From
 
 - **Run ID**: {run_id}
-- **HAR File**: ~/.reverse-api/runs/har/{run_id}/network.har
+- **HAR File**: ~/.reverse-api/runs/har/{run_id}/recording.har
 - **Date**: {date}
 - **Task**: {task}
 - **Base URL**: {base_url}
@@ -334,7 +334,7 @@ Update `~/.reverse-api/history.json` with run metadata:
   "task": "{task}",
   "url": "{url}",
   "timestamp": "{ISO timestamp}",
-  "har_path": "~/.reverse-api/runs/har/{run_id}/network.har",
+  "har_path": "~/.reverse-api/runs/har/{run_id}/recording.har",
   "output_dir": "./scripts/{task_name}/",
   "navigation_steps": {count},
   "status": "completed"
@@ -349,7 +349,7 @@ Agent completed task successfully!
 
 Task: {task}
 Run ID: {run_id}
-HAR file: ~/.reverse-api/runs/har/{run_id}/network.har
+HAR file: ~/.reverse-api/runs/har/{run_id}/recording.har
 
 Agent navigation:
 - Pages visited: {page_count}

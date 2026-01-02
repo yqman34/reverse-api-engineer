@@ -58,7 +58,7 @@ Re-run AI generation on a previous HAR capture.
 **Examples:**
 ```
 /reverse-api-engineer:engineer abc-123-def
-/reverse-api-engineer:engineer ~/.reverse-api/runs/xyz-789/har/network.har
+/reverse-api-engineer:engineer ~/.reverse-api/runs/har/xyz-789/recording.har
 /reverse-api-engineer:engineer ./captures/my-traffic.har
 ```
 
@@ -115,7 +115,7 @@ This skill automatically activates when you mention API reverse engineering task
 
 Captured traffic is saved to:
 ```
-~/.reverse-api/runs/har/{run_id}/network.har
+~/.reverse-api/runs/har/{run_id}/recording.har
 ```
 
 ### Generated Scripts
@@ -186,7 +186,7 @@ Scripts saved to: ./scripts/apple_jobs_api/
 ### Example 2: Re-engineer Existing Capture
 
 ```
-You: /reverse-api-engineer:engineer ~/.reverse-api/runs/abc-123/har/network.har
+You: /reverse-api-engineer:engineer ~/.reverse-api/runs/abc-123/har/recording.har
 
 [AI analyzes HAR]
 Found endpoints:
