@@ -1,0 +1,14 @@
+{
+  "name": "reverse-api-engineer",
+  "owner": {
+    "name": "Kalil Sama Bouzigues",
+    "email": "kalil.bouzigues@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "reverse-api-engineer",
+      "source": "./plugins/reverse-api-engineer",
+      "description": "A plugin to reverse engineer APIs from websites"
+    }
+  ]
+}
