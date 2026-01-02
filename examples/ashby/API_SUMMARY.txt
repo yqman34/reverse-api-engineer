@@ -1,0 +1,143 @@
+================================================================================
+ASHBY ATS API - REVERSE ENGINEERING SUMMARY
+================================================================================
+
+SOURCE: HAR file analysis from OpenAI careers page
+TARGET: https://jobs.ashbyhq.com/openai
+DATE: December 2024
+
+================================================================================
+API ENDPOINTS DISCOVERED
+================================================================================
+
+Base URL: https://jobs.ashbyhq.com/api/non-user-graphql
+
+1. ApiJobBoardWithTeams
+   - Purpose: List all jobs and teams
+   - Method: POST
+   - Auth: None required (public API)
+   - Returns: Complete job board with 200+ job listings
+
+2. ApiOrganizationFromHostedJobsPageName
+   - Purpose: Get organization metadata and branding
+   - Method: POST
+   - Auth: None required
+   - Returns: Company info, theme, logos, settings
+
+3. ApiJobPosting
+   - Purpose: Get detailed job information
+   - Method: POST
+   - Auth: None required
+   - Returns: Full job description, application form structure
+
+4. ApiAutocompleteGeoLocation
+   - Purpose: Location autocomplete for forms
+   - Method: POST
+   - Auth: None required
+   - Returns: Geographic location suggestions
+
+================================================================================
+KEY FINDINGS
+================================================================================
+
+✓ No authentication required - fully public API
+✓ GraphQL-based (Apollo Client)
+✓ Served via Cloudflare CDN
+✓ HTTP/3 with Brotli compression
+✓ Well-structured responses with type information
+✓ Includes compensation data (when company publishes it)
+✓ Complete application form metadata
+
+================================================================================
+DATA AVAILABLE
+================================================================================
+
+Job Information:
+  • Title, department, team
+  • Location (primary + secondary)
+  • Workplace type (Remote/Hybrid/Onsite)
+  • Employment type (Full-time/Part-time/Contract/Internship)
+  • Compensation ranges (when published)
+  • Full job description (HTML)
+  • Application requirements
+
+Organization Information:
+  • Company name and website
+  • Branding (logos, colors, theme)
+  • Timezone and settings
+  • Feature flags
+
+Application Forms:
+  • Field types and requirements
+  • Form validation rules
+  • EEOC survey forms
+
+================================================================================
+PYTHON CLIENT FEATURES
+================================================================================
+
+✓ Production-ready code
+✓ Type hints throughout
+✓ Comprehensive docstrings
+✓ Error handling
+✓ Context manager support
+✓ Data classes for structured responses
+✓ Filtering and search helpers
+
+================================================================================
+FILES CREATED
+================================================================================
+
+api_client.py       - Main Python client (26 KB)
+README.md           - Complete documentation (19 KB)
+example_usage.py    - Usage examples (5.8 KB)
+requirements.txt    - Dependencies
+QUICKSTART.md       - Quick start guide
+API_SUMMARY.txt     - This file
+
+================================================================================
+USAGE EXAMPLE
+================================================================================
+
+from api_client import AshbyAPIClient
+
+# Get all jobs from OpenAI
+with AshbyAPIClient() as client:
+    jobs = client.get_all_jobs("openai")
+    print(f"Found {len(jobs)} positions")
+
+    # Filter remote jobs
+    remote_jobs = [j for j in jobs if j['workplaceType'] == 'Remote']
+
+    # Get job details
+    details = client.get_job_posting_details("openai", jobs[0]['id'])
+    print(details.description_html)
+
+================================================================================
+WORKS WITH THESE COMPANIES (and many more)
+================================================================================
+
+• OpenAI          (openai)
+• Anthropic       (anthropic)
+• Stripe          (stripe)
+• Vercel          (vercel)
+• Figma           (figma)
+• Loom            (loom)
+• Ramp            (ramp)
+• Scale AI        (scaleai)
+
+... and any other company using Ashby ATS
+
+================================================================================
+TECHNICAL DETAILS
+================================================================================
+
+Protocol:     GraphQL (Apollo Client)
+Transport:    HTTP/3 (QUIC)
+Compression:  Brotli
+CDN:          Cloudflare
+Auth:         None (public API)
+Rate Limits:  None observed
+Caching:      Recommended (1-24 hours)
+
+================================================================================
