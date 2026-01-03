@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.10] - 2026-01-03
+
+### Added
+- **Claude Code Plugin**: Official plugin for seamless integration with Claude Code CLI
+  - Three operation modes: manual browser capture, autonomous agent browsing, and re-engineering from HAR files
+  - Comprehensive skill system with progressive disclosure of reverse engineering techniques
+  - Slash commands for quick access: `/agent`, `/engineer`, `/manual`
+  - Reference documentation for HAR analysis and authentication patterns
+  - API client templates for common patterns
+- **Example API Clients**: Added production-ready examples for major platforms
+  - Apple Jobs API client with field extraction utilities
+  - Ashby Jobs API client with comprehensive endpoint coverage
+  - Ikea API client for product search and catalog browsing
+  - Uber Careers API client with pagination support
+- **Engineer Tagging System**: Enhanced metadata tracking for generated API clients
+  - Automatic tagging of runs with descriptive identifiers
+  - Improved organization and searchability of reverse-engineered APIs
+
+### Changed
+- **Enhanced Auto Mode**: Improved MCP browser integration with better error handling
+- **Better Sync Fallback**: More robust file synchronization with fallback mechanisms
+- **Code Quality**: Comprehensive formatting and linting improvements across codebase
+
+### Fixed
+- **Agent Mode Screenshots**: Reduced unnecessary screenshot captures in agent mode
+- **Sync Error Handling**: Fixed sync fallback when primary sync method fails
+- **Path Handling**: Corrected CLAUDE.md documentation paths
+- **Import Errors**: Fixed missing imports in various modules
+
 ## [0.2.9] - 2025-12-30
 
 ### Added
