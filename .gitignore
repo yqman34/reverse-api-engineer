@@ -89,6 +89,5 @@ RELEASE.md
 prompt*.md
 
 test*
-!agents/test-marketplace/
 
 FEATURES.md

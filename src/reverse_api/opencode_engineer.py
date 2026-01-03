@@ -9,7 +9,7 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Any
 
 import httpx
 
@@ -44,27 +44,26 @@ class OpenCodeEngineer(BaseEngineer):
         self.opencode_provider = kwargs.pop("opencode_provider", "anthropic")
         self.opencode_model = kwargs.pop("opencode_model", "claude-sonnet-4-5")
 
+
         super().__init__(*args, **kwargs)
 
         # Override UI with OpenCode-specific version
         self.opencode_ui = OpenCodeUI(verbose=kwargs.get("verbose", True))
         self.ui = self.opencode_ui  # Ensure base class uses our specialized UI
-        self._last_error: Optional[str] = None
-        self._session_id: Optional[str] = None
+        self._last_error: str | None = None
+        self._session_id: str | None = None
         self._last_event_time = 0.0
 
-    async def analyze_and_generate(self) -> Optional[Dict[str, Any]]:
+    async def analyze_and_generate(self) -> dict[str, Any] | None:
         """Run the reverse engineering analysis with OpenCode."""
-        self.opencode_ui.header(self.run_id, self.prompt, self.opencode_model)
+        self.opencode_ui.header(self.run_id, self.prompt, self.opencode_model, self.sdk)
         self.opencode_ui.start_analysis()
 
         # Save the prompt to messages
         self.message_store.save_prompt(self._build_analysis_prompt())
 
         try:
-            async with httpx.AsyncClient(
-                base_url=self.BASE_URL, timeout=600.0
-            ) as client:
+            async with httpx.AsyncClient(base_url=self.BASE_URL, timeout=600.0) as client:
                 # Health check
                 try:
                     health_r = await client.get("/global/health")
@@ -113,7 +112,7 @@ class OpenCodeEngineer(BaseEngineer):
                 # Wait for events to complete
                 try:
                     await asyncio.wait_for(event_task, timeout=600.0)
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     self._last_error = "Session timed out (10 min)"
                     self.opencode_ui.error(self._last_error)
 
@@ -131,12 +130,8 @@ class OpenCodeEngineer(BaseEngineer):
 
             # Fetch actual provider and model used from session messages
             try:
-                async with httpx.AsyncClient(
-                    base_url=self.BASE_URL, timeout=10.0
-                ) as client:
-                    messages_r = await client.get(
-                        f"/session/{self._session_id}/message"
-                    )
+                async with httpx.AsyncClient(base_url=self.BASE_URL, timeout=10.0) as client:
+                    messages_r = await client.get(f"/session/{self._session_id}/message")
                     if messages_r.status_code == 200:
                         messages = messages_r.json()
                         # Find first assistant message with provider/model info
@@ -160,7 +155,7 @@ class OpenCodeEngineer(BaseEngineer):
             )
             self.opencode_ui.success(script_path, local_path)
 
-            result_data: Dict[str, Any] = {
+            result_data: dict[str, Any] = {
                 "script_path": script_path,
                 "usage": self.usage_metadata,
                 "session_id": self._session_id,
@@ -170,9 +165,7 @@ class OpenCodeEngineer(BaseEngineer):
 
         except httpx.ConnectError:
             self.opencode_ui.error("Connection error")
-            self.opencode_ui.console.print(
-                "\n[dim]Make sure OpenCode is running: opencode[/dim]"
-            )
+            self.opencode_ui.console.print("\n[dim]Make sure OpenCode is running: opencode[/dim]")
             self.message_store.save_error("Connection error")
             return None
 
@@ -195,7 +188,7 @@ class OpenCodeEngineer(BaseEngineer):
         self.opencode_ui.start_streaming()
 
         try:
-            debug_log(f"Connecting to GET /event")
+            debug_log("Connecting to GET /event")
             async with client.stream("GET", "/event", timeout=None) as response:
                 debug_log(f"Event stream connected, status={response.status_code}")
                 async for line in response.aiter_lines():
@@ -261,9 +254,7 @@ class OpenCodeEngineer(BaseEngineer):
                         event_sid = properties.get("sessionID")
                         status = properties.get("status", {})
                         status_type = status.get("type", "idle")
-                        debug_log(
-                            f"session.status: sessionID={event_sid}, status={status_type}"
-                        )
+                        debug_log(f"session.status: sessionID={event_sid}, status={status_type}")
                         if event_sid == self._session_id:
                             if status_type == "retry":
                                 attempt = status.get("attempt", 1)
@@ -297,13 +288,9 @@ class OpenCodeEngineer(BaseEngineer):
                             try:
                                 perm_response = await client.post(
                                     f"/session/{self._session_id}/permissions/{permission_id}",
-                                    json={
-                                        "response": "always"
-                                    },  # "once", "always", or "reject"
+                                    json={"response": "always"},  # "once", "always", or "reject"
                                 )
-                                debug_log(
-                                    f"Permission response: {perm_response.status_code}"
-                                )
+                                debug_log(f"Permission response: {perm_response.status_code}")
                                 if perm_response.status_code == 200:
                                     self.opencode_ui.permission_approved(perm_type)
                             except Exception as pe:
@@ -338,9 +325,7 @@ class OpenCodeEngineer(BaseEngineer):
                     elif event_type == "session.error":
                         event_sid = properties.get("sessionID")
                         if event_sid and event_sid != self._session_id:
-                            debug_log(
-                                f"session.error for other session {event_sid}, ignoring"
-                            )
+                            debug_log(f"session.error for other session {event_sid}, ignoring")
                             continue
 
                         error_obj = properties.get("error", {})
@@ -358,7 +343,9 @@ class OpenCodeEngineer(BaseEngineer):
                             elif error_name == "APIError":
                                 msg = error_data.get("message", "API error")
                                 status = error_data.get("statusCode", "")
-                                self._last_error = f"API error{' (' + str(status) + ')' if status else ''}: {msg}"
+                                self._last_error = (
+                                    f"API error{' (' + str(status) + ')' if status else ''}: {msg}"
+                                )
                             elif error_name == "MessageAbortedError":
                                 self._last_error = "Aborted"
                             else:
@@ -367,9 +354,7 @@ class OpenCodeEngineer(BaseEngineer):
                                     if isinstance(error_data, dict)
                                     else str(error_data)
                                 )
-                                self._last_error = (
-                                    f"{error_name}: {msg}" if msg else error_name
-                                )
+                                self._last_error = f"{error_name}: {msg}" if msg else error_name
                         else:
                             self._last_error = str(error_obj)
 
@@ -412,9 +397,7 @@ class OpenCodeEngineer(BaseEngineer):
             state = part.get("state", {})
             status = state.get("status")
 
-            debug_log(
-                f"Handling tool part: id={part_id}, tool={tool_name}, status={status}"
-            )
+            debug_log(f"Handling tool part: id={part_id}, tool={tool_name}, status={status}")
 
             if status == "running" and part_id not in seen_parts:
                 seen_parts.add(part_id)
@@ -476,6 +459,21 @@ class OpenCodeEngineer(BaseEngineer):
             self.usage_metadata["cache_creation_tokens"] = (
                 self.usage_metadata.get("cache_creation_tokens", 0) + cache_write
             )
+            self.usage_metadata["input_tokens"] = (
+                self.usage_metadata.get("input_tokens", 0) + input_tokens
+            )
+            self.usage_metadata["output_tokens"] = (
+                self.usage_metadata.get("output_tokens", 0) + output_tokens
+            )
+            self.usage_metadata["reasoning_tokens"] = (
+                self.usage_metadata.get("reasoning_tokens", 0) + reasoning_tokens
+            )
+            self.usage_metadata["cache_read_tokens"] = (
+                self.usage_metadata.get("cache_read_tokens", 0) + cache_read
+            )
+            self.usage_metadata["cache_creation_tokens"] = (
+                self.usage_metadata.get("cache_creation_tokens", 0) + cache_write
+            )
             self.usage_metadata["cost"] = self.usage_metadata.get("cost", 0) + cost
 
 
@@ -483,13 +481,13 @@ def run_opencode_engineering(
     run_id: str,
     har_path: Path,
     prompt: str,
-    model: Optional[str] = None,
-    additional_instructions: Optional[str] = None,
-    output_dir: Optional[str] = None,
+    model: str | None = None,
+    additional_instructions: str | None = None,
+    output_dir: str | None = None,
     verbose: bool = True,
-    opencode_provider: Optional[str] = None,
-    opencode_model: Optional[str] = None,
-) -> Optional[Dict[str, Any]]:
+    opencode_provider: str | None = None,
+    opencode_model: str | None = None,
+) -> dict[str, Any] | None:
     """Synchronous wrapper for OpenCode reverse engineering."""
     engineer = OpenCodeEngineer(
         run_id=run_id,

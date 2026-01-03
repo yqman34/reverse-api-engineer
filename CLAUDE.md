@@ -29,8 +29,10 @@ Both inherit from `BaseEngineer` (abstract base class) which defines the common 
 
 ### Data Flow
 1. Browser captures HAR → saved to `~/.reverse-api/runs/har/{run_id}`
+1. Browser captures HAR → saved to `~/.reverse-api/runs/har/{run_id}`
 2. Engineer analyzes HAR with LLM → generates Python scripts
 3. Scripts saved to:
+   - `~/.reverse-api/runs/scripts/{run_id}` (permanent)
    - `~/.reverse-api/runs/scripts/{run_id}` (permanent)
    - `./scripts/{descriptive_name}/` (local copy)
 
@@ -67,6 +69,17 @@ test_env/bin/reverse-api-engineer
 # Test with uv tool
 uv tool install .
 reverse-api-engineer
+```
+
+### Linting & Static Analysis
+```bash
+# Run all checks
+./scripts/lint.sh
+
+# Run specific tools
+uv run ruff check src     # Linter
+uv run ruff format src    # Formatter
+uv run mypy src           # Static analysis
 ```
 
 ## Release Process
@@ -168,7 +181,7 @@ API keys via environment variables: `BROWSER_USE_API_KEY`, `OPENAI_API_KEY`, `AN
 ### Debugging
 - **OpenCode**: Set `OPENCODE_DEBUG=1` for detailed logs
 - **Stagehand logs**: Suppressed by `_suppress_stagehand_logs()` in `browser.py`
-- **Message logs**: All LLM interactions saved to `~/.reverse-api/runs/messages/{run_id}`
+- **Message logs**: All LLM interactions saved to `~/.reverse-api/runs/messages/{run_id}.jsonl`
 
 ## File Structure Notes
 
@@ -190,10 +203,11 @@ src/reverse_api/
 ~/.reverse-api/
 ├── config.json         # User configuration
 ├── history.json        # Run history with costs
-└── runs/      
-    ├── har/{run_id}           # Captured traffic
-    ├── scripts/{run_id}        # Generated API clients
-    └── messages/{run_id}.jsonl       # LLM conversation logs
+└── runs/               # Organized by data type
+    ├── har/{run_id}/   # Captured traffic per run
+    ├── scripts/{run_id}/ # Generated API clients per run
+    └── messages/       # LLM conversation logs
+        └── {run_id}.jsonl
 ```
 
 ## Dependencies Management

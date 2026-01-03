@@ -2,12 +2,12 @@
 
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Any
 
-from .utils import get_scripts_dir, generate_folder_name
-from .tui import ClaudeUI
 from .messages import MessageStore
-from .sync import FileSyncWatcher
+from .sync import FileSyncWatcher, get_available_directory
+from .tui import ClaudeUI
+from .utils import generate_folder_name, get_scripts_dir
 
 
 class BaseEngineer(ABC):
@@ -18,9 +18,9 @@ class BaseEngineer(ABC):
         run_id: str,
         har_path: Path,
         prompt: str,
-        model: Optional[str] = None,
-        additional_instructions: Optional[str] = None,
-        output_dir: Optional[str] = None,
+        model: str | None = None,
+        additional_instructions: str | None = None,
+        output_dir: str | None = None,
         verbose: bool = True,
         enable_sync: bool = False,
         sdk: str = "claude",
@@ -33,13 +33,13 @@ class BaseEngineer(ABC):
         self.additional_instructions = additional_instructions
         self.scripts_dir = get_scripts_dir(run_id, output_dir)
         self.ui = ClaudeUI(verbose=verbose)
-        self.usage_metadata: Dict[str, Any] = {}
+        self.usage_metadata: dict[str, Any] = {}
         self.message_store = MessageStore(run_id, output_dir)
         self.enable_sync = enable_sync
         self.sdk = sdk
         self.is_fresh = is_fresh
-        self.sync_watcher: Optional[FileSyncWatcher] = None
-        self.local_scripts_dir: Optional[Path] = None
+        self.sync_watcher: FileSyncWatcher | None = None
+        self.local_scripts_dir: Path | None = None
 
     def start_sync(self):
         """Start real-time file sync if enabled."""
@@ -48,15 +48,10 @@ class BaseEngineer(ABC):
 
         # Generate local directory name
         base_name = generate_folder_name(self.prompt, sdk=self.sdk)
-        folder_name = base_name
-        local_dir = Path.cwd() / "scripts" / folder_name
+        scripts_base_path = Path.cwd() / "scripts"
 
-        # Handle existing folder - append suffix if needed
-        counter = 2
-        while local_dir.exists() and counter < 1000:
-            folder_name = f"{base_name}_{counter}"
-            local_dir = Path.cwd() / "scripts" / folder_name
-            counter += 1
+        # Get available directory (won't overwrite existing non-empty dirs)
+        local_dir = get_available_directory(scripts_base_path, base_name)
 
         self.local_scripts_dir = local_dir
 
@@ -87,7 +82,7 @@ class BaseEngineer(ABC):
             finally:
                 self.sync_watcher = None
 
-    def get_sync_status(self) -> Optional[dict]:
+    def get_sync_status(self) -> dict | None:
         """Get current sync status."""
         if self.sync_watcher:
             return self.sync_watcher.get_status()
@@ -95,7 +90,8 @@ class BaseEngineer(ABC):
 
     def _build_analysis_prompt(self) -> str:
         """Build the prompt for analyzing the HAR file."""
-        base_prompt = f"""You are tasked with analyzing a HAR (HTTP Archive) file to reverse engineer API calls and generate production-ready Python code that replicates those calls.
+        base_prompt = f"""You are tasked with analyzing a HAR (HTTP Archive) file to reverse engineer API calls,
+         and generate production-ready Python code that replicates those calls.
 
 Here is the HAR file path you need to analyze:
 <har_path>
@@ -199,12 +195,11 @@ After testing, provide your final response with:
 - Any limitations or caveats
 - The paths to the generated files
 
-Your final output should confirm that the files have been created and provide a brief summary of what was accomplished. Do not include the full code in your response - just confirm the files were saved and summarize the key findings.
+Your final output should confirm that the files have been created and provide a brief summary of what was accomplished.
+Do not include the full code in your response - just confirm the files were saved and summarize the key findings.
 """
         if self.additional_instructions:
-            base_prompt += (
-                f"\n\nAdditional instructions:\n{self.additional_instructions}"
-            )
+            base_prompt += f"\n\nAdditional instructions:\n{self.additional_instructions}"
 
         tag_context = f"""
 ## Tag-Based Workflows
@@ -229,6 +224,6 @@ conversation.
         return base_prompt + tag_context
 
     @abstractmethod
-    async def analyze_and_generate(self) -> Optional[Dict[str, Any]]:
+    async def analyze_and_generate(self) -> dict[str, Any] | None:
         """Run the reverse engineering analysis. Must be implemented by subclasses."""
         pass
