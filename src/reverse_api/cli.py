@@ -399,6 +399,20 @@ def repl_loop():
                             continue
                         target_run_id = latest_runs[0]["run_id"]
 
+                        # Validate that the latest run has a HAR file
+                        run_data = session_manager.get_run(target_run_id)
+                        if run_data:
+                            paths = run_data.get("paths", {})
+                            har_dir = Path(paths.get("har_dir", get_har_dir(target_run_id, None)))
+                        else:
+                            har_dir = get_har_dir(target_run_id, None)
+
+                        har_path = har_dir / "recording.har"
+                        if not har_path.exists():
+                            console.print(f" [red]error:[/red] latest run ({target_run_id}) has no HAR file")
+                            console.print(" [dim]tip:[/dim] use @id <run_id> @docs to specify a run with captured traffic")
+                            continue
+
                     if not target_run_id:
                         console.print(" [red]error:[/red] invalid @id syntax")
                         continue
