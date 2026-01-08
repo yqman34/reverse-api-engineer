@@ -280,7 +280,7 @@ def get_base_url(url: str) -> str:
 
 def normalize_path(path: str) -> str:
     """
-    Normalize a URL path by removing trailing slashes and lowercasing.
+    Normalize a URL path by removing trailing slashes.
 
     Args:
         path: URL path
