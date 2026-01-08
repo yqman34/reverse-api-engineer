@@ -260,6 +260,9 @@ Here is the output directory where you should save your generated files:
 {self.scripts_dir}
 </output_dir>
 
+**IMPORTANT: You have access to the AskUserQuestion tool to ask clarifying questions during your analysis.**
+Use this tool when you need to clarify functional requirements, prioritize features, choose between implementation approaches, or gather any other information that would help you generate better code.
+
 Your task is to:
 
 1. **Read and analyze the HAR file** to understand all API calls that were captured. Look for:
@@ -282,6 +285,12 @@ Your task is to:
    - Query parameters vs body parameters
    - Response data structures
 
+4. **Ask clarifying questions using AskUserQuestion** if needed:
+   - When multiple authentication methods are found, ask which to prioritize
+   - If uncertain about feature priorities, ask the user
+   - When implementation approaches are ambiguous, ask for preferences
+   - Use the tool for any clarifications that would improve the final code
+
 {self._get_language_instructions()}
 
 Before generating your code, use a scratchpad to plan your approach:
@@ -293,6 +302,8 @@ In your scratchpad:
 - Identify any patterns or commonalities between requests
 - Plan the structure of your {language_name} code
 - Consider potential issues (rate limiting, bot detection, etc.)
+- Decide whether `requests` will be sufficient or if Playwright is needed
+- Identify any ambiguities or questions you should ask the user using AskUserQuestion
 </scratchpad>
 
 If your first attempt doesn't work, analyze what went wrong and try again. Document each attempt and what you learned.
