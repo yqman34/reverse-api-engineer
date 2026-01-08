@@ -103,7 +103,7 @@ def prompt_interactive_options(
             elif mode_state["mode"] == "engineer" and text:
                 if text.startswith("@"):
                     # Tag completion
-                    tags = ["@id", "@help"]  # @docs, @build coming in next phases
+                    tags = ["@id", "@docs", "@help"]  # @build coming in next phases
 
                     # specific check for @id completion
                     id_match = re.match(r"@id\s+(.*)", text)
@@ -373,6 +373,8 @@ def repl_loop():
                 # Handle empty input
                 if not raw_input:
                     console.print(" [dim]Usage:[/dim] @id <run_id> [instructions]")
+                    console.print(" [dim]       [/dim] @docs <prompt> (latest run)")
+                    console.print(" [dim]       [/dim] @id <run_id> @docs")
                     console.print(" [dim]       [/dim] <run_id> (to switch context)")
                     continue
 
@@ -381,13 +383,22 @@ def repl_loop():
 
                 target_run_id = parsed["run_id"]
                 is_fresh = parsed["fresh"]
+                is_docs = parsed["docs"]
                 user_text = parsed["prompt"]
 
                 main_prompt = None
                 add_instr = None
 
                 if parsed["is_tag_command"]:
-                    # Explicit @id command
+                    # Explicit @id or @docs command
+                    # If @docs without @id, use latest run
+                    if is_docs and not target_run_id:
+                        latest_runs = session_manager.get_history(limit=1)
+                        if not latest_runs:
+                            console.print(" [red]error:[/red] no runs found in history")
+                            continue
+                        target_run_id = latest_runs[0]["run_id"]
+
                     if not target_run_id:
                         console.print(" [red]error:[/red] invalid @id syntax")
                         continue
@@ -421,6 +432,7 @@ def repl_loop():
                     model=options.get("model"),
                     additional_instructions=add_instr,
                     is_fresh=is_fresh,
+                    output_mode="docs" if is_docs else "client",
                 )
                 continue
 
@@ -1329,6 +1341,7 @@ def run_engineer(
     output_dir=None,
     additional_instructions=None,
     is_fresh=False,
+    output_mode="client",
 ):
     """Shared logic for reverse engineering."""
     if not har_path or not prompt:
@@ -1342,7 +1355,7 @@ def run_engineer(
                 console.print(f" [red]not found:[/red] {run_id}")
                 return None
             if not prompt:
-                prompt = "Reverse engineer captured APIs"  # Default
+                prompt = "Reverse engineer captured APIs" if output_mode == "client" else "Generate OpenAPI documentation"
         else:
             if not prompt:
                 prompt = run_data["prompt"]
@@ -1369,6 +1382,7 @@ def run_engineer(
             additional_instructions=additional_instructions,
             is_fresh=is_fresh,
             output_language=output_language,
+            output_mode=output_mode,
         )
     else:
         result = run_reverse_engineering(
@@ -1382,39 +1396,55 @@ def run_engineer(
             additional_instructions=additional_instructions,
             is_fresh=is_fresh,
             output_language=output_language,
+            output_mode=output_mode,
         )
 
     if result:
         # Skip manual copy if real-time sync is enabled (files already synced)
         if not enable_sync:
-            # Automatically copy scripts to current directory with a readable name
-            scripts_dir = Path(result["script_path"]).parent
+            # Automatically copy to current directory with a readable name
+            output_dir_path = Path(result["script_path"]).parent
             base_name = generate_folder_name(prompt, sdk=sdk)
-            scripts_base_path = Path.cwd() / "scripts"
+
+            # Choose base path based on output mode
+            if output_mode == "docs":
+                base_path = Path.cwd() / "docs"
+            else:
+                base_path = Path.cwd() / "scripts"
 
             from .sync import get_available_directory
 
             # Get available directory (won't overwrite existing non-empty dirs)
-            local_dir = get_available_directory(scripts_base_path, base_name)
+            local_dir = get_available_directory(base_path, base_name)
             local_dir.mkdir(parents=True, exist_ok=True)
 
             import shutil
 
-            for item in scripts_dir.iterdir():
+            for item in output_dir_path.iterdir():
                 if item.is_file():
                     shutil.copy2(item, local_dir / item.name)
 
-            console.print(" [dim]>[/dim] [white]decoding complete[/white]")
-            console.print(f" [dim]>[/dim] [white]{result['script_path']}[/white]")
-            console.print(f" [dim]>[/dim] [white]copied to ./scripts/{local_dir.name}[/white]\n")
+            # Different messages for docs vs client mode
+            if output_mode == "docs":
+                console.print(" [dim]>[/dim] [white]documentation complete[/white]")
+                console.print(f" [dim]>[/dim] [white]{result['script_path']}[/white]")
+                console.print(f" [dim]>[/dim] [white]copied to ./docs/{local_dir.name}[/white]\n")
+            else:
+                console.print(" [dim]>[/dim] [white]decoding complete[/white]")
+                console.print(f" [dim]>[/dim] [white]{result['script_path']}[/white]")
+                console.print(f" [dim]>[/dim] [white]copied to ./scripts/{local_dir.name}[/white]\n")
         else:
             # With sync enabled, just show completion
-            console.print(" [dim]>[/dim] [white]decoding complete[/white]")
+            if output_mode == "docs":
+                console.print(" [dim]>[/dim] [white]documentation complete[/white]")
+            else:
+                console.print(" [dim]>[/dim] [white]decoding complete[/white]")
             console.print(f" [dim]>[/dim] [white]{result['script_path']}[/white]\n")
 
         session_manager.update_run(
             run_id=run_id,
             sdk=sdk,
+            output_mode=output_mode,
             usage=result.get("usage", {}),
             paths={"script_path": result.get("script_path")},
         )

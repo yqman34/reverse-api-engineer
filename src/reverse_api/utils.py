@@ -222,6 +222,7 @@ def parse_engineer_prompt(input_text: str) -> dict:
         dict: {
             "run_id": str | None,
             "fresh": bool,
+            "docs": bool,
             "prompt": str,
             "is_tag_command": bool
         }
@@ -230,24 +231,40 @@ def parse_engineer_prompt(input_text: str) -> dict:
         return {
             "run_id": None,
             "fresh": False,
+            "docs": False,
             "prompt": "",
             "is_tag_command": False,
         }
 
-    # Regex for @id <run_id> [--fresh] <prompt>
+    # Check for standalone @docs first
+    if input_text.strip().startswith("@docs"):
+        docs_match = re.match(r"@docs(?:\s+(.*))?", input_text.strip())
+        if docs_match:
+            return {
+                "run_id": None,  # Will use latest run
+                "fresh": False,
+                "docs": True,
+                "prompt": docs_match.group(1) or "",
+                "is_tag_command": True,
+            }
+
+    # Enhanced regex for @id <run_id> [--fresh] [@docs] <prompt>
     # Group 1: run_id
     # Group 2: fresh flag (optional)
-    # Group 3: prompt (optional)
-    pattern = r"@id\s+([a-zA-Z0-9-_]+)(?:\s+(--fresh))?(?:\s+(.*))?"
+    # Group 3: docs flag (optional)
+    # Group 4: prompt (optional)
+    pattern = r"@id\s+([a-zA-Z0-9-_]+)(?:\s+(--fresh))?(?:\s+(@docs))?(?:\s+(.*))?"
     match = re.match(pattern, input_text.strip())
 
     if match:
         run_id = match.group(1)
         fresh = bool(match.group(2))
-        remaining_prompt = match.group(3) or ""
+        docs = bool(match.group(3))
+        remaining_prompt = match.group(4) or ""
         return {
             "run_id": run_id,
             "fresh": fresh,
+            "docs": docs,
             "prompt": remaining_prompt,
             "is_tag_command": True,
         }
@@ -255,6 +272,7 @@ def parse_engineer_prompt(input_text: str) -> dict:
     return {
         "run_id": None,
         "fresh": False,
+        "docs": False,
         "prompt": input_text.strip(),
         "is_tag_command": False,
     }
@@ -308,6 +326,14 @@ def get_scripts_dir(run_id: str, output_dir: str | None = None) -> Path:
     scripts_dir = base_dir / "scripts" / run_id
     scripts_dir.mkdir(parents=True, exist_ok=True)
     return scripts_dir
+
+
+def get_docs_dir(run_id: str, output_dir: str | None = None) -> Path:
+    """Get the docs directory for a specific run."""
+    base_dir = get_base_output_dir(output_dir)
+    docs_dir = base_dir / "docs" / run_id
+    docs_dir.mkdir(parents=True, exist_ok=True)
+    return docs_dir
 
 
 def get_messages_path(run_id: str, output_dir: str | None = None) -> Path:
