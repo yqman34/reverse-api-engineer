@@ -378,8 +378,13 @@ def repl_loop():
                     console.print(" [dim]       [/dim] <run_id> (to switch context)")
                     continue
 
-                # Parse tag
-                parsed = parse_engineer_prompt(raw_input)
+                # Parse tag with session_manager to resolve latest run centrally
+                parsed = parse_engineer_prompt(raw_input, session_manager)
+
+                # Handle parser errors
+                if parsed["error"]:
+                    console.print(f" [red]error:[/red] {parsed['error']}")
+                    continue
 
                 target_run_id = parsed["run_id"]
                 is_fresh = parsed["fresh"]
@@ -391,15 +396,8 @@ def repl_loop():
 
                 if parsed["is_tag_command"]:
                     # Explicit @id or @docs command
-                    # If @docs without @id, use latest run
-                    if is_docs and not target_run_id:
-                        latest_runs = session_manager.get_history(limit=1)
-                        if not latest_runs:
-                            console.print(" [red]error:[/red] no runs found in history")
-                            continue
-                        target_run_id = latest_runs[0]["run_id"]
-
-                        # Validate that the latest run has a HAR file
+                    # Validate HAR file exists for @docs mode
+                    if is_docs and target_run_id:
                         run_data = session_manager.get_run(target_run_id)
                         if run_data:
                             paths = run_data.get("paths", {})
@@ -409,7 +407,7 @@ def repl_loop():
 
                         har_path = har_dir / "recording.har"
                         if not har_path.exists():
-                            console.print(f" [red]error:[/red] latest run ({target_run_id}) has no HAR file")
+                            console.print(f" [red]error:[/red] run {target_run_id} has no HAR file")
                             console.print(" [dim]tip:[/dim] use @id <run_id> @docs to specify a run with captured traffic")
                             continue
 
@@ -424,20 +422,13 @@ def repl_loop():
                         add_instr = user_text if user_text else None
 
                 else:
-                    # Implicit mode
-                    # Check if input is just a run_id
+                    # Implicit mode - parser already resolved latest run
+                    # Check if input is just a run_id (switching context)
                     if session_manager.get_run(user_text):
                         target_run_id = user_text
                         # Just switching run, no new instructions
                     else:
-                        # Implicit @id on latest run
-                        latest_runs = session_manager.get_history(limit=1)
-                        if not latest_runs:
-                            console.print(" [red]error:[/red] no runs found in history")
-                            continue
-                        target_run_id = latest_runs[0]["run_id"]
-
-                        # Treat input as additive instructions
+                        # Parser resolved latest run, treat input as additive instructions
                         add_instr = user_text
 
                 run_engineer(

@@ -215,8 +215,12 @@ def _slugify(text: str) -> str:
     return "_".join(words)[:50]
 
 
-def parse_engineer_prompt(input_text: str) -> dict:
+def parse_engineer_prompt(input_text: str, session_manager=None) -> dict:
     """Parse engineer mode input for tags.
+
+    Args:
+        input_text: The raw input text to parse
+        session_manager: Optional SessionManager to resolve latest run_id when needed
 
     Returns:
         dict: {
@@ -224,7 +228,8 @@ def parse_engineer_prompt(input_text: str) -> dict:
             "fresh": bool,
             "docs": bool,
             "prompt": str,
-            "is_tag_command": bool
+            "is_tag_command": bool,
+            "error": str | None  # Error message if validation failed
         }
     """
     if not input_text:
@@ -234,16 +239,28 @@ def parse_engineer_prompt(input_text: str) -> dict:
             "docs": False,
             "prompt": "",
             "is_tag_command": False,
+            "error": None,
         }
 
     # Check for standalone @docs first (no prompt parameter)
     if input_text.strip() == "@docs":
+        # Resolve latest run if session_manager provided
+        run_id = None
+        error = None
+        if session_manager:
+            latest_runs = session_manager.get_history(limit=1)
+            if not latest_runs:
+                error = "no runs found in history"
+            else:
+                run_id = latest_runs[0]["run_id"]
+
         return {
-            "run_id": None,  # Will use latest run
+            "run_id": run_id,
             "fresh": False,
             "docs": True,
             "prompt": "",
             "is_tag_command": True,
+            "error": error,
         }
 
     # Enhanced regex for @id <run_id> [--fresh] [@docs] <prompt>
@@ -265,14 +282,26 @@ def parse_engineer_prompt(input_text: str) -> dict:
             "docs": docs,
             "prompt": remaining_prompt,
             "is_tag_command": True,
+            "error": None,
         }
 
+    # Implicit mode - resolve latest run if session_manager provided
+    run_id = None
+    error = None
+    if session_manager:
+        latest_runs = session_manager.get_history(limit=1)
+        if not latest_runs:
+            error = "no runs found in history"
+        else:
+            run_id = latest_runs[0]["run_id"]
+
     return {
-        "run_id": None,
+        "run_id": run_id,
         "fresh": False,
         "docs": False,
         "prompt": input_text.strip(),
         "is_tag_command": False,
+        "error": error,
     }
 
 
