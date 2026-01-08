@@ -317,7 +317,7 @@ def parse_record_only_tag(prompt: str) -> tuple[str, bool]:
         tuple: (cleaned_prompt, is_record_only)
     """
     if not prompt:
-        return prompt, False
+        return "", False
 
     # Match @record-only anywhere in the prompt (case-insensitive)
     pattern = r"@record-only\s*"
