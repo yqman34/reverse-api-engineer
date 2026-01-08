@@ -373,8 +373,8 @@ def repl_loop():
                 # Handle empty input
                 if not raw_input:
                     console.print(" [dim]Usage:[/dim] @id <run_id> [instructions]")
-                    console.print(" [dim]       [/dim] @docs <prompt> (latest run)")
-                    console.print(" [dim]       [/dim] @id <run_id> @docs")
+                    console.print(" [dim]       [/dim] @docs (generate docs for latest run)")
+                    console.print(" [dim]       [/dim] @id <run_id> @docs [prompt]")
                     console.print(" [dim]       [/dim] <run_id> (to switch context)")
                     continue
 

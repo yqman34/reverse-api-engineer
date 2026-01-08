@@ -236,17 +236,15 @@ def parse_engineer_prompt(input_text: str) -> dict:
             "is_tag_command": False,
         }
 
-    # Check for standalone @docs first
-    if input_text.strip().startswith("@docs"):
-        docs_match = re.match(r"@docs(?:\s+(.*))?", input_text.strip())
-        if docs_match:
-            return {
-                "run_id": None,  # Will use latest run
-                "fresh": False,
-                "docs": True,
-                "prompt": docs_match.group(1) or "",
-                "is_tag_command": True,
-            }
+    # Check for standalone @docs first (no prompt parameter)
+    if input_text.strip() == "@docs":
+        return {
+            "run_id": None,  # Will use latest run
+            "fresh": False,
+            "docs": True,
+            "prompt": "",
+            "is_tag_command": True,
+        }
 
     # Enhanced regex for @id <run_id> [--fresh] [@docs] <prompt>
     # Group 1: run_id
