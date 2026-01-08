@@ -426,11 +426,6 @@ class OpenCodeEngineer(BaseEngineer):
             self.usage_metadata["reasoning_tokens"] = self.usage_metadata.get("reasoning_tokens", 0) + reasoning_tokens
             self.usage_metadata["cache_read_tokens"] = self.usage_metadata.get("cache_read_tokens", 0) + cache_read
             self.usage_metadata["cache_creation_tokens"] = self.usage_metadata.get("cache_creation_tokens", 0) + cache_write
-            self.usage_metadata["input_tokens"] = self.usage_metadata.get("input_tokens", 0) + input_tokens
-            self.usage_metadata["output_tokens"] = self.usage_metadata.get("output_tokens", 0) + output_tokens
-            self.usage_metadata["reasoning_tokens"] = self.usage_metadata.get("reasoning_tokens", 0) + reasoning_tokens
-            self.usage_metadata["cache_read_tokens"] = self.usage_metadata.get("cache_read_tokens", 0) + cache_read
-            self.usage_metadata["cache_creation_tokens"] = self.usage_metadata.get("cache_creation_tokens", 0) + cache_write
             self.usage_metadata["cost"] = self.usage_metadata.get("cost", 0) + cost
 
 
